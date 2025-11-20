@@ -1,0 +1,22 @@
+### 1. Real-time demand forecasting + beautiful ERP-style reports
+
+* `What used to happens`: Pull sales data from Shopify/Amazon → paste into Google Sheets →
+apply home-grown formulas → manually tweak for promos, seasonality, new launches
+
+* `What we want to happen`: Continuously ingests real-time sales, returns, trends → runs ML forecasts →
+auto-adjusts for promos, seasonality, cannibalization
+
+### 2. Automatically decides & generates reorder POs (with one-click or auto-approval)
+
+Calculates optimal order quantities, safety stock, lead-time variability → creates draft POs automatically
+POs appear ready for one-click approval (or fully auto-approved at high confidence)
+
+### 3. Natural-language UI where anyone can ask “When will Matcha Lemon restock?” or
+Anyone in the company asks Sarah in Slack (“When is the new flavor back in stock?”) → instant accurate answer
+
+## Features
+
+1. Sales data ingestion every hour from a fake Shopify → PostgreSQL
+2. Time-series demand forecasting (Prophet or a small LSTM in PyTorch) + baseline vs actual chart
+3. Full ERP-style dashboard in React (inventory table, weeks-of-supply heatmap, inbound POs tracker, forecast accuracy)
+4. Auto-generated reorder POs based on min/max thresholds + one-click approval
