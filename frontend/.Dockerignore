@@ -1,0 +1,15 @@
+# Minimal but safe .dockerignore for React/TypeScript/Vite/CRA
+node_modules
+dist
+build
+.env
+.env.local
+.git
+.gitignore
+.vercel
+.netlify
+.DS_Store
+npm-debug.log*
+yarn-debug.log*
+*.tsbuildinfo
+coverage

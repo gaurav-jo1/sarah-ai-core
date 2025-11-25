@@ -7,3 +7,14 @@ services:
       - '8000:8000'
     volumes:
       - ./backend:/app
+
+  frontend:
+    build: ./frontend
+    container_name: frontend_c
+    ports:
+      - '5173:5173'
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+    - CHOKIDAR_USEPOLLING=true
