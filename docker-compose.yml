@@ -7,6 +7,12 @@ services:
       - '8000:8000'
     volumes:
       - ./backend:/app
+    environment:
+          - DATABASE_URL=postgresql://postgres_user:postgres_pass@postgres:5432/myapp_db
+          - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - postgres
+      - redis
 
   frontend:
     build: ./frontend
@@ -18,3 +24,37 @@ services:
       - /app/node_modules
     environment:
     - CHOKIDAR_USEPOLLING=true
+
+  postgres:
+    image: postgres:18.1-alpine3.21
+    container_name: postgres_c
+    environment:
+      - POSTGRES_DB=myapp_db
+      - POSTGRES_USER=postgres_user
+      - POSTGRES_PASSWORD=postgres_pass
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres_user -d myapp_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7.2.12-alpine
+    container_name: redis_c
+    ports:
+      - '6379:6379'
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
+  redisdata:
