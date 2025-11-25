@@ -58,4 +58,4 @@ cd mini-sarah-ai
 docker-compose up --build
 
 # 3. Open browser
-http://localhost:3000
+http://localhost:5173/
