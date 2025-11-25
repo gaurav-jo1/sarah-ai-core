@@ -6,7 +6,7 @@ This is a **working end-to-end prototype** of what Sarah AI does today, built sp
 
 * 🚀 Live Demo: https://mini-sarah-ai.vercel.app
 * 📹 2-Min Loom Walkthrough: https://www.loom.com/share/your-video-id
-* 📂 GitHub Repo: https://github.com/yourusername/mini-sarah-ai
+* 📂 GitHub Repo: https://github.com/gaurav-jo1/CPG-Demand-Forecaster-Project.git
 
 ## What This Prototype Actually Does (Zero Hype)
 
