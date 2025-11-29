@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { Routes, Route, Link, useLocation } from "react-router";
+import { Home, MessageSquare, X, BrainCircuit } from "lucide-react";
+
 import HomePage from "./pages/HomePage";
 import ChatPage from "./pages/ChatPage";
 
@@ -8,8 +10,8 @@ const App: React.FC = () => {
   const location = useLocation();
 
   const Menus = [
-    { title: "Home", path: "/", src: <HomeIcon /> },
-    { title: "Chat", path: "/chat", src: <ChatIcon /> },
+    { title: "Home", path: "/", src: <Home className="w-5 h-5" /> },
+    { title: "Chat", path: "/chat", src: <MessageSquare className="w-5 h-5" /> },
   ];
 
   return (
@@ -30,7 +32,8 @@ const App: React.FC = () => {
             onMouseEnter={() => !open && setOpen(true)}
           >
             <div className={`duration-400 ${open && "rotate-360"}`}>
-               <LogoIcon />
+               {/* Lucide Logo Icon */}
+               <BrainCircuit className="w-8 h-8 text-blue-500 bg-white rounded-lg p-1"/>
             </div>
           </div>
 
@@ -40,7 +43,8 @@ const App: React.FC = () => {
                 onClick={() => setOpen(false)}
                 className="text-gray-400 hover:text-white transition-colors cursor-pointer"
             >
-                <XMarkIcon />
+                {/* Lucide Close Icon */}
+                <X className="w-6 h-6" />
             </button>
           )}
 
@@ -78,29 +82,3 @@ const App: React.FC = () => {
 };
 
 export default App;
-
-// --- ICONS (Added XMarkIcon, removed Chevron) ---
-
-const HomeIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
-  </svg>
-);
-
-const ChatIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
-  </svg>
-);
-
-const LogoIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8 text-blue-500 bg-white rounded-lg p-1">
-     <path strokeLinecap="round" strokeLinejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
-  </svg>
-)
-
-const XMarkIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-  </svg>
-);
