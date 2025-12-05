@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { Routes, Route, Link, useLocation } from "react-router";
-import { Home, MessageSquare, X, BrainCircuit } from "lucide-react";
+import { Home, MessageSquare, X, Menu, Database } from "lucide-react";
 
 import HomePage from "./pages/HomePage";
 import ChatPage from "./pages/ChatPage";
+import DataConnectPage from "./pages/DataConnectPage";
 
 const App: React.FC = () => {
   const [open, setOpen] = useState(true);
@@ -11,12 +12,20 @@ const App: React.FC = () => {
 
   const Menus = [
     { title: "Home", path: "/", src: <Home className="w-5 h-5" /> },
-    { title: "Chat", path: "/chat", src: <MessageSquare className="w-5 h-5" /> },
+    {
+      title: "Chat",
+      path: "/chat",
+      src: <MessageSquare className="w-5 h-5" />,
+    },
+    {
+      title: "Data Connect",
+      path: "/data-connect",
+      src: <Database className="w-5 h-5" />,
+    },
   ];
 
   return (
     <div className="flex h-screen bg-white">
-
       {/* SIDEBAR */}
       <div
         className={` ${
@@ -25,29 +34,24 @@ const App: React.FC = () => {
       >
         {/* HEADER: Logo & Close Button */}
         <div className="flex justify-between items-center mb-6">
-
           {/* Logo Group: Hovering here opens the sidebar */}
           <div
             className="flex gap-x-4 items-center cursor-pointer"
             onMouseEnter={() => !open && setOpen(true)}
           >
-            <div className={`duration-400 ${open && "rotate-360"}`}>
-               {/* Lucide Logo Icon */}
-               <BrainCircuit className="w-8 h-8 text-blue-500 bg-white rounded-lg p-1"/>
-            </div>
+            <Menu className="w-8 h-8 text-blue-500 bg-white rounded-lg p-1" />
           </div>
 
           {/* Close Button: Only visible when Open */}
           {open && (
             <button
-                onClick={() => setOpen(false)}
-                className="text-gray-400 hover:text-white transition-colors cursor-pointer"
+              onClick={() => setOpen(false)}
+              className="text-gray-400 hover:text-white transition-colors cursor-pointer"
             >
-                {/* Lucide Close Icon */}
-                <X className="w-6 h-6" />
+              {/* Lucide Close Icon */}
+              <X className="w-6 h-6" />
             </button>
           )}
-
         </div>
 
         {/* MENU ITEMS */}
@@ -61,7 +65,13 @@ const App: React.FC = () => {
                 `}
               >
                 <div className="min-w-5">{Menu.src}</div>
-                <span className={`${!open && "hidden"} origin-left duration-200`}>
+                <span
+                  className={`
+                    transition-all duration-300
+                    whitespace-nowrap overflow-hidden
+                    ${open ? "opacity-100 w-auto" : "opacity-0 w-0"}
+                  `}
+                >
                   {Menu.title}
                 </span>
               </Link>
@@ -75,6 +85,7 @@ const App: React.FC = () => {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/chat" element={<ChatPage />} />
+          <Route path="/data-connect" element={<DataConnectPage />} />
         </Routes>
       </div>
     </div>
