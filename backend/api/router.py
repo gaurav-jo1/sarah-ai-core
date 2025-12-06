@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from .endpoints import user
+from .endpoints import product_data
 
 api_router = APIRouter()
-api_router.include_router(user.router, prefix="/users", tags=["Users"])
+api_router.include_router(product_data.router, prefix="/product_data", tags=["Products Data"])
