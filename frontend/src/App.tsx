@@ -7,7 +7,7 @@ import ChatPage from "./pages/ChatPage";
 import DataConnectPage from "./pages/DataConnectPage";
 
 const App: React.FC = () => {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState<boolean>(true);
   const location = useLocation();
 
   const Menus = [

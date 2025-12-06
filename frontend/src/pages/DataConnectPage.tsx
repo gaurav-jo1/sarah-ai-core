@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useMemo } from "react";
 // Importing icons from lucide-react as requested
 import { Upload, FileText, Database, Cloud, Settings } from "lucide-react";
-
+import axios from "axios";
 // Define the type for the upload status
 type UploadStatus = "success" | "error" | null;
 
@@ -67,23 +67,26 @@ const DataConnectPage: React.FC = () => {
     handleFileChange(e.target.files?.[0]);
   };
 
-  // Simulate the data connection/upload process
-  const handleConnectData = () => {
+  const handleConnectData = async () => {
     if (!selectedFile) {
       setUploadStatus("error");
       return;
     }
 
-    setIsUploading(true);
-    setUploadStatus(null);
+    try {
+      setIsUploading(true);
+      setUploadStatus(null);
 
-    // Simulate API call delay
-    setTimeout(() => {
-      setIsUploading(false);
-      // Simulate successful processing
+      await axios.post("http://127.0.0.1:8000/data_connect", selectedFile);
+
       setUploadStatus("success");
-      setSelectedFile(null); // Clear file after simulated success
-    }, 2500);
+      setSelectedFile(null);
+    } catch (err) {
+      console.log("Error uploading file:", err);
+      setUploadStatus("error");
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   // Dynamic styling for the upload button
@@ -215,7 +218,7 @@ const DataConnectPage: React.FC = () => {
         <div className="lg:w-1/2 p-6 bg-white shadow-xl rounded-2xl border border-gray-100">
           <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
             <Database className="w-6 h-6 mr-2 text-indigo-500" />
-            Enterprise Integrations (Coming Soon)
+            Enterprise Integrations
           </h2>
 
           <p className="text-gray-600 mb-6">
