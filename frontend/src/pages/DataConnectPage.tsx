@@ -80,7 +80,7 @@ const DataConnectPage: React.FC = () => {
       const formData = new FormData();
       formData.append("file", selectedFile);
 
-      const res = await axios.post("http://127.0.0.1:8000/data_connect", formData, {
+      const res = await axios.post("http://127.0.0.1:8000/product/data_connect", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
