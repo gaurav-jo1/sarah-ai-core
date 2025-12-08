@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const ProductDataSchema = z.object({
+  id: z.uuid(),
   Category: z.string(),
   Cost_Per_Unit: z.number(),
   Current_Price: z.number(),
@@ -18,7 +19,7 @@ export const ProductDataSchema = z.object({
   Year_Number: z.number(),
 });
 
-export const DataResponseSchema = z.array(ProductDataSchema)
+export const DataResponseSchema = z.array(ProductDataSchema);
 
 export type ProductData = z.infer<typeof ProductDataSchema>;
 export type DataResponse = z.infer<typeof DataResponseSchema>;

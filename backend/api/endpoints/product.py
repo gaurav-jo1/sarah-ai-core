@@ -1,12 +1,12 @@
-from fastapi import APIRouter, Depends, HTTPException
-from fastapi import status
-from fastapi import UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, status
+from fastapi.encoders import jsonable_encoder
+
 import pandas as pd
 import os
 from sqlalchemy.orm import Session
 from db.database import SessionLocal
 from typing import List
-from schemas.product import ProductData
+from schemas.product import ProductResponse , ProductData
 from db.product import Product
 
 router = APIRouter()
@@ -23,11 +23,12 @@ def home():
     return {"message": "Welcome to the FastAPI application!"}
 
 # Get all product data
-@router.get("/data", response_model=List[ProductData])
+@router.get("/data", response_model=List[ProductResponse])
 def get_all_products(db: Session = Depends(get_db)):
     products = db.query(Product).all()
+    products_data = jsonable_encoder(products)
     print(f"Retrieved {len(products)} products from the database.")
-    return products
+    return products_data
 
 @router.post("/data_connect", status_code=status.HTTP_201_CREATED)
 async def data_connect(file: UploadFile = File(...), db: Session = Depends(get_db)):

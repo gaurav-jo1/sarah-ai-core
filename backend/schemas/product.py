@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import List
+from uuid import UUID
 
 class ProductData(BaseModel):
     product_id: str = Field(alias="Product_ID")
@@ -23,5 +24,20 @@ class ProductData(BaseModel):
         "from_attributes": True,
     }
 
-class ProductDataList(BaseModel):
-    data: List[ProductData]
+class ProductResponse(BaseModel):
+    id: UUID
+    Product_ID: str
+    Product_Name: str
+    Category: str
+    Month: str
+    Month_Number: int
+    Year_Number: int
+    Current_Price: float
+    Opening_Price: float
+    Cost_Per_Unit: float
+    Price_Change_Percent: float
+    Units_Sold: int
+    Revenue: float
+    Opening_Stock: int
+    Stock_Received: int
+    Stock_On_Hand: int

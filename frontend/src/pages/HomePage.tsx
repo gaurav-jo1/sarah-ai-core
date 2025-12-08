@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router";
 import { Database, TrendingUp, Sparkles } from "lucide-react";
-import type { DataResponse} from "../types/product.types";
+import { DataResponseSchema} from "../types/product.types";
 
 const HomePage: React.FC = () => {
   const [dataExists, setDataExists] = useState<boolean | null>(null);
@@ -12,13 +12,16 @@ const HomePage: React.FC = () => {
   useEffect(() => {
     const checkDataStatus = async () => {
       try {
-        const response = await axios.get<DataResponse>(
+        const response = await axios.get(
           "http://127.0.0.1:8000/product/data"
         );
 
+        // validate response data
+        const parsed = DataResponseSchema.parse(response.data);
+
         // console.log("Length of the response:", response.data.length);
 
-        if (response.data.length > 0) {
+        if (parsed.length > 0) {
           setDataExists(true);
         } else {
           setDataExists(false);
