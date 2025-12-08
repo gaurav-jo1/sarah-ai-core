@@ -1,13 +1,19 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router";
-import { Database, TrendingUp, Sparkles } from "lucide-react";
-import { DataResponseSchema} from "../types/product.types";
+import { Database, TrendingUp, Sparkles, DollarSign, ShoppingBag, CreditCard, Package } from "lucide-react";
+import { DataResponseSchema, type DataResponse } from "../types/product.types";
 
 const HomePage: React.FC = () => {
   const [dataExists, setDataExists] = useState<boolean | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [metrics, setMetrics] = useState<{
+    revenue: number;
+    unitsSold: number;
+    avgOrderValue: number;
+    stockOnHand: number;
+  } | null>(null);
 
   useEffect(() => {
     const checkDataStatus = async () => {
@@ -19,10 +25,9 @@ const HomePage: React.FC = () => {
         // validate response data
         const parsed = DataResponseSchema.parse(response.data);
 
-        // console.log("Length of the response:", response.data.length);
-
         if (parsed.length > 0) {
           setDataExists(true);
+          calculateMetrics(parsed);
         } else {
           setDataExists(false);
         }
@@ -39,6 +44,43 @@ const HomePage: React.FC = () => {
     checkDataStatus();
   }, []);
 
+  const calculateMetrics = (data: DataResponse) => {
+    // 1. Find the latest Month/Year combination
+    let maxYear = 0;
+    let maxMonth = 0;
+
+    data.forEach((item) => {
+      if (item.Year_Number > maxYear) {
+        maxYear = item.Year_Number;
+        maxMonth = item.Month_Number;
+      } else if (item.Year_Number === maxYear) {
+        if (item.Month_Number > maxMonth) {
+          maxMonth = item.Month_Number;
+        }
+      }
+    });
+
+    // 2. Filter data for the latest period
+    const currentPeriodData = data.filter(
+      (item) => item.Year_Number === maxYear && item.Month_Number === maxMonth
+    );
+
+    // 3. Calculate Aggregates
+    const revenue = currentPeriodData.reduce((acc, curr) => acc + curr.Revenue, 0);
+    const unitsSold = currentPeriodData.reduce((acc, curr) => acc + curr.Units_Sold, 0);
+    const stockOnHand = currentPeriodData.reduce((acc, curr) => acc + curr.Stock_On_Hand, 0);
+
+    // Avg Order Value = Revenue / Units Sold (Average Selling Price)
+    const avgOrderValue = unitsSold > 0 ? revenue / unitsSold : 0;
+
+    setMetrics({
+      revenue,
+      unitsSold,
+      avgOrderValue,
+      stockOnHand,
+    });
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-full">
@@ -51,10 +93,10 @@ const HomePage: React.FC = () => {
   }
 
   return (
-    <div className="space-y-16">
+    <div className="space-y-12">
       {/* --- Welcome Heading (Appears ONLY if dataExists is false) --- */}
       {!dataExists && (
-        <header className="text-center mb-10 p-6 rounded-3xl bg-gray-100 border border-indigo-200">
+        <header className="text-center mb-10 p-6 rounded-3xl bg-gray-100 border border-indigo-200 shadow-lg">
           <h1 className="text-6xl font-extrabold text-gray-900 leading-snug tracking-tighter">
             Welcome to the{" "}
             <span className="text-indigo-600">Mini Sarah AI</span>
@@ -67,19 +109,108 @@ const HomePage: React.FC = () => {
       )}
 
       {/* --- Conditional Rendering based on Data Status --- */}
-      {dataExists ? (
-        <section className="p-12 border border-green-200 rounded-2xl bg-green-50/70 text-center shadow-lg transition duration-500">
-          <TrendingUp className="w-12 h-12 text-green-600 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-green-800">
-            Data Ready for Forecasting!
-          </h2>
-          <p className="text-green-700 mt-2 text-lg">
-            Your data is connected. Proceed with the next steps to view insights
-            and demand forecasts.
-          </p>
-        </section>
+      {dataExists && metrics ? (
+        <div className="space-y-8">
+           <section className="p-8 border border-green-200 rounded-2xl bg-green-50/70 flex flex-col md:flex-row items-center justify-between shadow-sm">
+             <div className="flex items-center mb-4 md:mb-0">
+                <TrendingUp className="w-10 h-10 text-green-600 mr-4" />
+                <div>
+                   <h2 className="text-2xl font-bold text-green-800">
+                     Data Ready
+                   </h2>
+                    <p className="text-green-700">
+                      Forecasting engine is primed with your latest data.
+                    </p>
+                </div>
+             </div>
+          </section>
+
+          {/* Metrics Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+            {/* 1. Monthly Revenue */}
+            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-xl hover:shadow-2xl transition-shadow duration-300 relative overflow-hidden">
+               <div className="absolute top-0 right-0 p-4 opacity-10">
+                  <DollarSign className="w-24 h-24 text-indigo-600 transform rotate-12" />
+               </div>
+               <div className="flex items-center mb-4">
+                  <div className="p-3 bg-indigo-100 rounded-lg text-indigo-600">
+                    <DollarSign className="w-6 h-6" />
+                  </div>
+                  <h3 className="ml-3 text-lg font-medium text-gray-500">Monthly Revenue</h3>
+               </div>
+               <div className="relative z-10">
+                  <p className="text-3xl font-bold text-gray-900">
+                    ${metrics.revenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </p>
+                  <p className="text-sm text-green-500 mt-1 flex items-center">
+                    <TrendingUp className="w-3 h-3 mr-1" />
+                    Latest Month
+                  </p>
+               </div>
+            </div>
+
+            {/* 2. Units Sold */}
+            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-xl hover:shadow-2xl transition-shadow duration-300 relative overflow-hidden">
+               <div className="absolute top-0 right-0 p-4 opacity-10">
+                  <ShoppingBag className="w-24 h-24 text-blue-600 transform -rotate-12" />
+               </div>
+               <div className="flex items-center mb-4">
+                  <div className="p-3 bg-blue-100 rounded-lg text-blue-600">
+                    <ShoppingBag className="w-6 h-6" />
+                  </div>
+                  <h3 className="ml-3 text-lg font-medium text-gray-500">Units Sold</h3>
+               </div>
+               <div className="relative z-10">
+                  <p className="text-3xl font-bold text-gray-900">
+                    {metrics.unitsSold.toLocaleString()}
+                  </p>
+                  <p className="text-sm text-gray-400 mt-1">Total volume</p>
+               </div>
+            </div>
+
+             {/* 3. Avg Order Value */}
+             <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-xl hover:shadow-2xl transition-shadow duration-300 relative overflow-hidden">
+               <div className="absolute top-0 right-0 p-4 opacity-10">
+                  <CreditCard className="w-24 h-24 text-purple-600 transform rotate-6" />
+               </div>
+               <div className="flex items-center mb-4">
+                  <div className="p-3 bg-purple-100 rounded-lg text-purple-600">
+                    <CreditCard className="w-6 h-6" />
+                  </div>
+                  <h3 className="ml-3 text-lg font-medium text-gray-500">Avg Unit Price</h3>
+               </div>
+               <div className="relative z-10">
+                  <p className="text-3xl font-bold text-gray-900">
+                    ${metrics.avgOrderValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </p>
+                   <p className="text-sm text-gray-400 mt-1">Per unit avg</p>
+               </div>
+            </div>
+
+             {/* 4. Stock on Hand */}
+             <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-xl hover:shadow-2xl transition-shadow duration-300 relative overflow-hidden">
+               <div className="absolute top-0 right-0 p-4 opacity-10">
+                  <Package className="w-24 h-24 text-orange-600 transform -rotate-6" />
+               </div>
+               <div className="flex items-center mb-4">
+                  <div className="p-3 bg-orange-100 rounded-lg text-orange-600">
+                    <Package className="w-6 h-6" />
+                  </div>
+                  <h3 className="ml-3 text-lg font-medium text-gray-500">Stock on Hand</h3>
+               </div>
+               <div className="relative z-10">
+                  <p className="text-3xl font-bold text-gray-900">
+                    {metrics.stockOnHand.toLocaleString()}
+                  </p>
+                   <p className="text-sm text-gray-400 mt-1">Current Inventory</p>
+               </div>
+            </div>
+
+          </div>
+        </div>
       ) : (
-        <section className="text-center p-16 mt-10 border border-indigo-200 rounded-3xl bg-gray-100 shadow-2xl shadow-indigo-100/50">
+        <section className="text-center p-16 mt-10 border border-indigo-200 rounded-3xl bg-gray-100 shadow-lg">
           <div className="relative inline-block mb-8">
             <div className="p-4 bg-indigo-50 rounded-full border-4 border-indigo-100">
               <Database className="w-16 h-16 text-indigo-500" />
