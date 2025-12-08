@@ -88,7 +88,7 @@ const ChatPage: React.FC = () => {
             </div>
           )}
 
-          <div className="flex items-center space-x-3 bg-gray-100 rounded-full p-1 pr-3"> {/* Curved background for input group */}
+          <div className="flex items-center space-x-3 bg-gray-100 border border-indigo-200  rounded-full p-1 pr-3 "> {/* Curved background for input group */}
 
             {/* Hidden File Input */}
             <input
