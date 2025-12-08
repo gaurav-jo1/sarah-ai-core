@@ -1,14 +1,13 @@
 services:
-
   backend:
     build: ./backend
     container_name: backend_c
     ports:
-      - '8000:8000'
+      - "8000:8000"
     volumes:
       - ./backend:/app
     environment:
-          - REDIS_URL=redis://redis:6379/0
+      - REDIS_URL=redis://redis:6379/0
     depends_on:
       - postgres
       - redis
@@ -17,12 +16,12 @@ services:
     build: ./frontend
     container_name: frontend_c
     ports:
-      - '5173:5173'
+      - "5173:5173"
     volumes:
       - ./frontend:/app
       - /app/node_modules
     environment:
-    - CHOKIDAR_USEPOLLING=true
+      - CHOKIDAR_USEPOLLING=true
 
   postgres:
     image: postgres:18.1-alpine3.21
@@ -32,7 +31,7 @@ services:
       - POSTGRES_USER=postgres_user
       - POSTGRES_PASSWORD=postgres_pass
     ports:
-      - '5432:5432'
+      - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -41,11 +40,21 @@ services:
       timeout: 5s
       retries: 5
 
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "8080:80"
+    depends_on:
+      - postgres
+
   redis:
     image: redis:7.2.12-alpine
     container_name: redis_c
     ports:
-      - '6379:6379'
+      - "6379:6379"
     volumes:
       - redisdata:/data
     healthcheck:

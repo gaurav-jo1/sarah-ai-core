@@ -27,7 +27,6 @@ def home():
 def get_all_products(db: Session = Depends(get_db)):
     products = db.query(Product).all()
     print(f"Retrieved {len(products)} products from the database.")
-
     return products
 
 @router.post("/data_connect", status_code=status.HTTP_201_CREATED)
@@ -50,18 +49,18 @@ async def data_connect(file: UploadFile = File(...), db: Session = Depends(get_d
             return {"filename": filename, "message": "Empty file uploaded—no data processed."}
 
         products: List[ProductData] = []
-        for row in df.to_dict(orient="records"):
-            # Use strict=False if you want to ignore extra/missing fields
-            products.append(ProductData.model_validate(row))
+        # for row in df.to_dict(orient="records"):
+        #     # Use strict=False if you want to ignore extra/missing fields
+        #     products.append(ProductData.model_validate(row))
 
-        batch_size = 1000
-        for i in range(0, len(products), batch_size):
-            batch = products[i:i + batch_size]
-            for product in batch:
-                db_record = Product(**product.model_dump(by_alias=True))
-                db.add(db_record)
-            db.flush()
-        db.commit()
+        # batch_size = 1000
+        # for i in range(0, len(products), batch_size):
+        #     batch = products[i:i + batch_size]
+        #     for product in batch:
+        #         db_record = Product(**product.model_dump(by_alias=True))
+        #         db.add(db_record)
+        #     db.flush()
+        # db.commit()
 
     except pd.errors.EmptyDataError:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="File is empty or unreadable.")

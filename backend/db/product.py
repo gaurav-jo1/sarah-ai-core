@@ -1,10 +1,11 @@
 from sqlalchemy import Column, Integer, String, Float
 from db.database import Base
+from uuid import uuid4
 
 class Product(Base):
     __tablename__ = "products"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()), unique=True, nullable=False)
     Product_ID = Column(String)
     Product_Name = Column(String)
     Category = Column(String)

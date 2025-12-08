@@ -2,6 +2,8 @@ import React, { useState, useCallback, useMemo } from "react";
 // Importing icons from lucide-react as requested
 import { Upload, FileText, Database, Cloud, Settings } from "lucide-react";
 import axios from "axios";
+import { useNavigate } from "react-router";
+
 // Define the type for the upload status
 type UploadStatus = "success" | "error" | null;
 
@@ -11,6 +13,8 @@ const DataConnectPage: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [uploadStatus, setUploadStatus] = useState<UploadStatus>(null);
+
+  const navigate = useNavigate();
 
   // Memoized file name display
   const fileNameDisplay = useMemo(() => {
@@ -89,6 +93,7 @@ const DataConnectPage: React.FC = () => {
       console.log(res.data, res.status);
       setUploadStatus("success");
       setSelectedFile(null);
+      navigate("/");
 
     } catch (err) {
       console.log("Error uploading file:", err);
