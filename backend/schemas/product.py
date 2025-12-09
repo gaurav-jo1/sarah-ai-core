@@ -1,6 +1,5 @@
-from pydantic import BaseModel, Field, computed_field
+from pydantic import BaseModel, Field
 from uuid import UUID
-from datetime import datetime
 
 class ProductData(BaseModel):
     product_id: str = Field(alias="Product_ID")

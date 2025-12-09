@@ -1,13 +1,11 @@
 import os
 import pandas as pd
-from typing import List
 from db.product import Product
 from sqlalchemy.orm import Session
 from db.database import SessionLocal
-from fastapi.encoders import jsonable_encoder
-from sqlalchemy.dialects.postgresql import insert
-from schemas.product import ProductResponse, ProductData
+from schemas.product import ProductData
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, status
+from collections import defaultdict
 
 router = APIRouter()
 
@@ -26,12 +24,76 @@ def home():
 
 
 # Get all product data
-@router.get("/data", response_model=List[ProductResponse])
+@router.get(
+    "/data",
+    status_code=status.HTTP_200_OK,
+    # response_model=ProductsResponse
+)
 def get_all_products(db: Session = Depends(get_db)):
-    products = db.query(Product).all()
-    products_data = jsonable_encoder(products)
-    print(f"Retrieved {len(products)} products from the database.")
-    return products_data
+    last_4_periods = (
+        db.query(Product.Period)
+        .distinct()
+        .order_by(Product.Period.desc())
+        .limit(4)
+        .all()
+    )
+
+    last_4_periods = [p[0] for p in last_4_periods]
+
+    products = (
+        db.query(Product)
+        .filter(Product.Period.in_(last_4_periods))
+        .order_by(Product.Period.desc())
+        .all()
+    )
+
+    grouped = defaultdict(list)
+
+    for p in products:
+        grouped[p.Period].append(p)
+
+    response_data = {}
+
+    total_revenue = {}
+    total_units_sold = {}
+    total_stock_on_hand = {}
+    all_top_products = {}
+    for period, group_products in grouped.items():
+
+        # 1. Total Revenue
+        total_revenue[period] = round(
+            sum(p.Current_Price * p.Units_Sold for p in group_products),
+            2
+        )
+
+        # 2. Units Sold
+        total_units_sold[period] = sum((p.Units_Sold for p in group_products))
+
+        # 3. Stock on Hand
+        total_stock_on_hand[period] = sum(((p.Opening_Stock + p.Stock_Received) - p.Units_Sold for p in group_products))
+
+        # 4. In the last 4 months, what are the top 4 products that sold the best.
+
+        for p in group_products:
+
+            if p.Product_Name not in all_top_products:
+
+                all_top_products[p.Product_Name] = p.Units_Sold
+
+            else:
+
+                all_top_products[p.Product_Name] += p.Units_Sold
+
+
+    response_data["monthly_revenue"] = total_revenue
+    response_data["units_sold"] = total_units_sold
+    response_data["stock_on_hand"] = total_stock_on_hand
+
+    top_4 = sorted(all_top_products.items(), key=lambda x: x[1], reverse=True)[:4]
+
+    response_data["top_products"] = dict(top_4)
+
+    return response_data
 
 
 @router.post("/data_connect", status_code=status.HTTP_201_CREATED)
