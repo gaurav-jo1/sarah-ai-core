@@ -2,21 +2,16 @@ import { z } from "zod";
 
 export const ProductDataSchema = z.object({
   id: z.uuid(),
-  Category: z.string(),
-  Cost_Per_Unit: z.number(),
-  Current_Price: z.number(),
-  Month: z.string(),
-  Month_Number: z.number(),
-  Opening_Price: z.number(),
-  Opening_Stock: z.number(),
-  Price_Change_Percent: z.number(),
   Product_ID: z.string(),
   Product_Name: z.string(),
-  Revenue: z.number(),
-  Stock_On_Hand: z.number(),
-  Stock_Received: z.number(),
+  Category: z.string(),
+  Period: z.string(),
+  Current_Price: z.float32(),
+  Opening_Price: z.float32(),
+  Cost_Per_Unit: z.float32(),
   Units_Sold: z.number(),
-  Year_Number: z.number(),
+  Opening_Stock: z.number(),
+  Stock_Received: z.number(),
 });
 
 export const DataResponseSchema = z.array(ProductDataSchema);
