@@ -7,21 +7,20 @@ import {
   Sparkles,
   DollarSign,
   ShoppingBag,
-  CreditCard,
   Package,
 } from "lucide-react";
-import { metricsResponseSchema } from "../types/product.types";
+import {
+  metricsResponseSchema,
+  type metricsResponse,
+} from "../types/product.types";
+import { TopProductsChart } from "../components/TopProductsChart";
+import { RevenueChart } from "../components/RevenueChart";
 
 const HomePage: React.FC = () => {
   const [dataExists, setDataExists] = useState<boolean | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [metrics, setMetrics] = useState<{
-    revenue: number;
-    unitsSold: number;
-    stock_on_hand: number;
-    top_product: number;
-  } | null>(null);
+  const [metrics, setMetrics] = useState<metricsResponse | null>(null);
 
   useEffect(() => {
     const checkDataStatus = async () => {
@@ -33,19 +32,9 @@ const HomePage: React.FC = () => {
         // validate response data
         const parsed = metricsResponseSchema.parse(response.data);
 
-        const revenue = parsed.latest_monthly_revenue;
-        const unitsSold = parsed.latest_units_sold;
-        const stock_on_hand = parsed.latest_stock_on_hand;
-        const top_product = parsed.latest_top_products;
-
         if (Object.keys(parsed).length > 0) {
           setDataExists(true);
-          setMetrics({
-            revenue,
-            unitsSold,
-            stock_on_hand,
-            top_product,
-          });
+          setMetrics(parsed);
         } else {
           setDataExists(false);
         }
@@ -66,7 +55,6 @@ const HomePage: React.FC = () => {
         } else {
           console.log("Unexpected or network error:", err);
         }
-
       } finally {
         setLoading(false);
       }
@@ -123,7 +111,7 @@ const HomePage: React.FC = () => {
               <div className="relative z-10">
                 <p className="text-3xl font-bold text-gray-900">
                   $
-                  {metrics.revenue.toLocaleString(undefined, {
+                  {metrics.latest_monthly_revenue.toLocaleString(undefined, {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}
@@ -150,7 +138,7 @@ const HomePage: React.FC = () => {
               </div>
               <div className="relative z-10">
                 <p className="text-3xl font-bold text-gray-900">
-                  {metrics.unitsSold.toLocaleString()}
+                  {metrics.latest_units_sold.toLocaleString()}
                 </p>
                 <p className="text-sm text-gray-400 mt-1">Total volume</p>
               </div>
@@ -171,36 +159,20 @@ const HomePage: React.FC = () => {
               </div>
               <div className="relative z-10">
                 <p className="text-3xl font-bold text-gray-900">
-                  {metrics.stock_on_hand.toLocaleString()}
+                  {metrics.latest_stock_on_hand.toLocaleString()}
                 </p>
                 <p className="text-sm text-gray-400 mt-1">Current Inventory</p>
               </div>
             </div>
 
-            {/* 4. Top Products */}
-            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-xl hover:shadow-2xl transition-shadow duration-300 relative overflow-hidden">
-              <div className="absolute top-0 right-0 p-4 opacity-10">
-                <CreditCard className="w-24 h-24 text-purple-600 transform rotate-6" />
-              </div>
-              <div className="flex items-center mb-4">
-                <div className="p-3 bg-purple-100 rounded-lg text-purple-600">
-                  <CreditCard className="w-6 h-6" />
-                </div>
-                <h3 className="ml-3 text-lg font-medium text-gray-500">
-                  Top Products
-                </h3>
-              </div>
-              <div className="relative z-10">
-                <p className="text-3xl font-bold text-gray-900">
-                  {metrics.top_product.toLocaleString(undefined, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
-                </p>
-                <p className="text-sm text-gray-400 mt-1">Per unit avg</p>
-              </div>
+            {/* 4. Top Products Chart */}
+            <div className="h-full">
+              <TopProductsChart topProducts={metrics.top_products} />
             </div>
           </div>
+
+          {/* Revenue Trend Chart */}
+          <RevenueChart monthlyRevenue={metrics.monthly_revenue} />
         </div>
       ) : (
         <section className="text-center p-16 mt-10 border border-indigo-200 rounded-3xl bg-gray-100 shadow-lg">

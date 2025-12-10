@@ -22,7 +22,7 @@ def home():
 
 @router.get(
     "/metrics",
-    response_model=MetricsResponse,  # ← Add this! Auto-validates + docs
+    response_model=MetricsResponse,
     status_code=status.HTTP_200_OK,
 )
 def get_metrics(db: Session = Depends(get_db)):
@@ -103,7 +103,6 @@ def get_metrics(db: Session = Depends(get_db)):
             "stock_on_hand": total_stock_on_hand,
             "top_products": top_products_dict,  # Overall top 4
 
-            # Latest fields (from most recent period)
             "latest_monthly_revenue": total_revenue[latest_period],
             "latest_units_sold": total_units_sold[latest_period],
             "latest_stock_on_hand": total_stock_on_hand[latest_period],
