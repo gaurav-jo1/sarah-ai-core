@@ -3,12 +3,11 @@ import pandas as pd
 from db.product import Product
 from sqlalchemy.orm import Session
 from db.database import SessionLocal
-from schemas.product import ProductData
+from schemas.product import ProductData, MetricsResponse
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, status
 from collections import defaultdict
 
 router = APIRouter()
-
 
 def get_db():
     db = SessionLocal()
@@ -17,84 +16,111 @@ def get_db():
     finally:
         db.close()
 
-
 @router.get("/")
 def home():
     return {"message": "Welcome to the FastAPI application!"}
 
-
-# Get all product data
 @router.get(
-    "/data",
+    "/metrics",
+    response_model=MetricsResponse,  # ← Add this! Auto-validates + docs
     status_code=status.HTTP_200_OK,
-    # response_model=ProductsResponse
 )
-def get_all_products(db: Session = Depends(get_db)):
-    last_4_periods = (
-        db.query(Product.Period)
-        .distinct()
-        .order_by(Product.Period.desc())
-        .limit(4)
-        .all()
-    )
-
-    last_4_periods = [p[0] for p in last_4_periods]
-
-    products = (
-        db.query(Product)
-        .filter(Product.Period.in_(last_4_periods))
-        .order_by(Product.Period.desc())
-        .all()
-    )
-
-    grouped = defaultdict(list)
-
-    for p in products:
-        grouped[p.Period].append(p)
-
-    response_data = {}
-
-    total_revenue = {}
-    total_units_sold = {}
-    total_stock_on_hand = {}
-    all_top_products = {}
-    for period, group_products in grouped.items():
-
-        # 1. Total Revenue
-        total_revenue[period] = round(
-            sum(p.Current_Price * p.Units_Sold for p in group_products),
-            2
+def get_metrics(db: Session = Depends(get_db)):
+    try:
+        # Get last 4 periods (unchanged, but added check)
+        last_4_periods = (
+            db.query(Product.Period)
+            .distinct()
+            .order_by(Product.Period.desc())
+            .limit(4)
+            .all()
         )
+        if not last_4_periods:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="No periods found in the database"
+            )
+        last_4_periods = [p[0] for p in last_4_periods]
 
-        # 2. Units Sold
-        total_units_sold[period] = sum((p.Units_Sold for p in group_products))
+        # Fetch products for those periods (unchanged)
+        products = (
+            db.query(Product)
+            .filter(Product.Period.in_(last_4_periods))
+            .order_by(Product.Period.desc())
+            .all()
+        )
+        if not products:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="No products found for recent periods"
+            )
 
-        # 3. Stock on Hand
-        total_stock_on_hand[period] = sum(((p.Opening_Stock + p.Stock_Received) - p.Units_Sold for p in group_products))
+        # Group by period (unchanged)
+        grouped = defaultdict(list)
+        for p in products:
+            grouped[p.Period].append(p)
 
-        # 4. In the last 4 months, what are the top 4 products that sold the best.
+        # Compute aggregates per period
+        total_revenue = {}
+        total_units_sold = {}
+        total_stock_on_hand = {}
+        all_top_products = {}  # Overall top products across all periods
 
-        for p in group_products:
+        for period, group_products in grouped.items():
+            # 1. Total Revenue (rounded for money)
+            total_revenue[period] = round(
+                sum(p.Current_Price * p.Units_Sold for p in group_products), 2
+            )
 
-            if p.Product_Name not in all_top_products:
+            # 2. Total Units Sold
+            total_units_sold[period] = sum(p.Units_Sold for p in group_products)
 
-                all_top_products[p.Product_Name] = p.Units_Sold
+            # 3. Total Stock on Hand
+            total_stock_on_hand[period] = sum(
+                (p.Opening_Stock + p.Stock_Received - p.Units_Sold)
+                for p in group_products
+            )
 
-            else:
+            # 4. Accumulate top products (overall, across periods)
+            for p in group_products:
+                if p.Product_Name not in all_top_products:
+                    all_top_products[p.Product_Name] = p.Units_Sold
+                else:
+                    all_top_products[p.Product_Name] += p.Units_Sold
 
-                all_top_products[p.Product_Name] += p.Units_Sold
+        # Get top 4 overall (unchanged)
+        top_4 = sorted(all_top_products.items(), key=lambda x: x[1], reverse=True)[:4]
+        top_products_dict = dict(top_4)
 
+        # Get latest period (first in descending order)
+        latest_period = last_4_periods[0]
 
-    response_data["monthly_revenue"] = total_revenue
-    response_data["units_sold"] = total_units_sold
-    response_data["stock_on_hand"] = total_stock_on_hand
+        # Build response data with ALL fields from model
+        response_data = {
+            # Dict fields
+            "monthly_revenue": total_revenue,
+            "units_sold": total_units_sold,
+            "stock_on_hand": total_stock_on_hand,
+            "top_products": top_products_dict,  # Overall top 4
 
-    top_4 = sorted(all_top_products.items(), key=lambda x: x[1], reverse=True)[:4]
+            # Latest fields (from most recent period)
+            "latest_monthly_revenue": total_revenue[latest_period],
+            "latest_units_sold": total_units_sold[latest_period],
+            "latest_stock_on_hand": total_stock_on_hand[latest_period],
+            "latest_top_products": len(top_4),  # Assuming this is the count (e.g., 4)
+        }
 
-    response_data["top_products"] = dict(top_4)
+        return MetricsResponse(**response_data)
 
-    return response_data
-
+    except HTTPException:
+        # Re-raise FastAPI exceptions
+        raise
+    except Exception as _:
+        # Log in production: import logging; logging.error(f"Metrics error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to fetch metrics"
+        )
 
 @router.post("/data_connect", status_code=status.HTTP_201_CREATED)
 async def data_connect(file: UploadFile = File(...), db: Session = Depends(get_db)):
@@ -148,6 +174,7 @@ async def data_connect(file: UploadFile = File(...), db: Session = Depends(get_d
                 Units_Sold=p.units_sold,
                 Opening_Stock=p.opening_stock,
                 Stock_Received=p.stock_received,
+
             )
             for p in products_data
         ]

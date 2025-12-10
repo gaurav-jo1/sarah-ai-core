@@ -14,7 +14,19 @@ export const ProductDataSchema = z.object({
   Stock_Received: z.number(),
 });
 
+export const metricsResponseSchema = z.object({
+  latest_monthly_revenue: z.float32(),
+  latest_units_sold: z.number(),
+  latest_stock_on_hand: z.number(),
+  latest_top_products: z.number(),
+  monthly_revenue: z.record(z.string(), z.float32()),
+  units_sold: z.record(z.string(), z.number()),
+  stock_on_hand: z.record(z.string(), z.number()),
+  top_products: z.record(z.string(), z.number()),
+});
+
 export const DataResponseSchema = z.array(ProductDataSchema);
 
 export type ProductData = z.infer<typeof ProductDataSchema>;
 export type DataResponse = z.infer<typeof DataResponseSchema>;
+export type metricsResponse = z.infer<typeof metricsResponseSchema>;

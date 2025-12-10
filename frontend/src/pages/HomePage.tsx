@@ -1,8 +1,16 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router";
-import { Database, TrendingUp, Sparkles, DollarSign, ShoppingBag, CreditCard, Package } from "lucide-react";
-import { DataResponseSchema, type DataResponse } from "../types/product.types";
+import {
+  Database,
+  TrendingUp,
+  Sparkles,
+  DollarSign,
+  ShoppingBag,
+  CreditCard,
+  Package,
+} from "lucide-react";
+import { metricsResponseSchema } from "../types/product.types";
 
 const HomePage: React.FC = () => {
   const [dataExists, setDataExists] = useState<boolean | null>(null);
@@ -11,31 +19,54 @@ const HomePage: React.FC = () => {
   const [metrics, setMetrics] = useState<{
     revenue: number;
     unitsSold: number;
-    avgOrderValue: number;
-    stockOnHand: number;
+    stock_on_hand: number;
+    top_product: number;
   } | null>(null);
 
   useEffect(() => {
     const checkDataStatus = async () => {
       try {
         const response = await axios.get(
-          "http://127.0.0.1:8000/product/data"
+          "http://127.0.0.1:8000/product/metrics"
         );
 
         // validate response data
-        const parsed = DataResponseSchema.parse(response.data);
+        const parsed = metricsResponseSchema.parse(response.data);
 
-        if (parsed.length > 0) {
+        const revenue = parsed.latest_monthly_revenue;
+        const unitsSold = parsed.latest_units_sold;
+        const stock_on_hand = parsed.latest_stock_on_hand;
+        const top_product = parsed.latest_top_products;
+
+        if (Object.keys(parsed).length > 0) {
           setDataExists(true);
-          calculateMetrics(parsed);
+          setMetrics({
+            revenue,
+            unitsSold,
+            stock_on_hand,
+            top_product,
+          });
         } else {
           setDataExists(false);
         }
-
       } catch (err) {
-        console.error("Error fetching data status:", err);
-        setDataExists(false);
-        setError("Could not connect to the API server.");
+        if (axios.isAxiosError(err) && err.response) {
+          const status = err.response.status;
+          console.log("Status:", status);
+          setDataExists(false);
+
+          if (status === 404) {
+            console.log("Data not found — show empty state message");
+          }
+
+          if (status === 500) {
+            console.log("Server error — show retry button");
+            setError("Could not connect to the API server.");
+          }
+        } else {
+          console.log("Unexpected or network error:", err);
+        }
+
       } finally {
         setLoading(false);
       }
@@ -43,43 +74,6 @@ const HomePage: React.FC = () => {
 
     checkDataStatus();
   }, []);
-
-  const calculateMetrics = (data: DataResponse) => {
-    // 1. Find the latest Month/Year combination
-    let maxYear = 0;
-    let maxMonth = 0;
-
-    data.forEach((item) => {
-      if (item.Year_Number > maxYear) {
-        maxYear = item.Year_Number;
-        maxMonth = item.Month_Number;
-      } else if (item.Year_Number === maxYear) {
-        if (item.Month_Number > maxMonth) {
-          maxMonth = item.Month_Number;
-        }
-      }
-    });
-
-    // 2. Filter data for the latest period
-    const currentPeriodData = data.filter(
-      (item) => item.Year_Number === maxYear && item.Month_Number === maxMonth
-    );
-
-    // 3. Calculate Aggregates
-    const revenue = currentPeriodData.reduce((acc, curr) => acc + curr.Revenue, 0);
-    const unitsSold = currentPeriodData.reduce((acc, curr) => acc + curr.Units_Sold, 0);
-    const stockOnHand = currentPeriodData.reduce((acc, curr) => acc + curr.Stock_On_Hand, 0);
-
-    // Avg Order Value = Revenue / Units Sold (Average Selling Price)
-    const avgOrderValue = unitsSold > 0 ? revenue / unitsSold : 0;
-
-    setMetrics({
-      revenue,
-      unitsSold,
-      avgOrderValue,
-      stockOnHand,
-    });
-  };
 
   if (loading) {
     return (
@@ -111,102 +105,101 @@ const HomePage: React.FC = () => {
       {/* --- Conditional Rendering based on Data Status --- */}
       {dataExists && metrics ? (
         <div className="space-y-8">
-           <section className="p-8 border border-green-200 rounded-2xl bg-green-50/70 flex flex-col md:flex-row items-center justify-between shadow-sm">
-             <div className="flex items-center mb-4 md:mb-0">
-                <TrendingUp className="w-10 h-10 text-green-600 mr-4" />
-                <div>
-                   <h2 className="text-2xl font-bold text-green-800">
-                     Data Ready
-                   </h2>
-                    <p className="text-green-700">
-                      Forecasting engine is primed with your latest data.
-                    </p>
-                </div>
-             </div>
-          </section>
-
           {/* Metrics Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-
             {/* 1. Monthly Revenue */}
             <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-xl hover:shadow-2xl transition-shadow duration-300 relative overflow-hidden">
-               <div className="absolute top-0 right-0 p-4 opacity-10">
-                  <DollarSign className="w-24 h-24 text-indigo-600 transform rotate-12" />
-               </div>
-               <div className="flex items-center mb-4">
-                  <div className="p-3 bg-indigo-100 rounded-lg text-indigo-600">
-                    <DollarSign className="w-6 h-6" />
-                  </div>
-                  <h3 className="ml-3 text-lg font-medium text-gray-500">Monthly Revenue</h3>
-               </div>
-               <div className="relative z-10">
-                  <p className="text-3xl font-bold text-gray-900">
-                    ${metrics.revenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                  </p>
-                  <p className="text-sm text-green-500 mt-1 flex items-center">
-                    <TrendingUp className="w-3 h-3 mr-1" />
-                    Latest Month
-                  </p>
-               </div>
+              <div className="absolute top-0 right-0 p-4 opacity-10">
+                <DollarSign className="w-24 h-24 text-indigo-600 transform rotate-12" />
+              </div>
+              <div className="flex items-center mb-4">
+                <div className="p-3 bg-indigo-100 rounded-lg text-indigo-600">
+                  <DollarSign className="w-6 h-6" />
+                </div>
+                <h3 className="ml-3 text-lg font-medium text-gray-500">
+                  Monthly Revenue
+                </h3>
+              </div>
+              <div className="relative z-10">
+                <p className="text-3xl font-bold text-gray-900">
+                  $
+                  {metrics.revenue.toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                </p>
+                <p className="text-sm text-green-500 mt-1 flex items-center">
+                  <TrendingUp className="w-3 h-3 mr-1" />
+                  Latest Month
+                </p>
+              </div>
             </div>
 
             {/* 2. Units Sold */}
             <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-xl hover:shadow-2xl transition-shadow duration-300 relative overflow-hidden">
-               <div className="absolute top-0 right-0 p-4 opacity-10">
-                  <ShoppingBag className="w-24 h-24 text-blue-600 transform -rotate-12" />
-               </div>
-               <div className="flex items-center mb-4">
-                  <div className="p-3 bg-blue-100 rounded-lg text-blue-600">
-                    <ShoppingBag className="w-6 h-6" />
-                  </div>
-                  <h3 className="ml-3 text-lg font-medium text-gray-500">Units Sold</h3>
-               </div>
-               <div className="relative z-10">
-                  <p className="text-3xl font-bold text-gray-900">
-                    {metrics.unitsSold.toLocaleString()}
-                  </p>
-                  <p className="text-sm text-gray-400 mt-1">Total volume</p>
-               </div>
+              <div className="absolute top-0 right-0 p-4 opacity-10">
+                <ShoppingBag className="w-24 h-24 text-blue-600 transform -rotate-12" />
+              </div>
+              <div className="flex items-center mb-4">
+                <div className="p-3 bg-blue-100 rounded-lg text-blue-600">
+                  <ShoppingBag className="w-6 h-6" />
+                </div>
+                <h3 className="ml-3 text-lg font-medium text-gray-500">
+                  Units Sold
+                </h3>
+              </div>
+              <div className="relative z-10">
+                <p className="text-3xl font-bold text-gray-900">
+                  {metrics.unitsSold.toLocaleString()}
+                </p>
+                <p className="text-sm text-gray-400 mt-1">Total volume</p>
+              </div>
             </div>
 
-             {/* 3. Avg Order Value */}
-             <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-xl hover:shadow-2xl transition-shadow duration-300 relative overflow-hidden">
-               <div className="absolute top-0 right-0 p-4 opacity-10">
-                  <CreditCard className="w-24 h-24 text-purple-600 transform rotate-6" />
-               </div>
-               <div className="flex items-center mb-4">
-                  <div className="p-3 bg-purple-100 rounded-lg text-purple-600">
-                    <CreditCard className="w-6 h-6" />
-                  </div>
-                  <h3 className="ml-3 text-lg font-medium text-gray-500">Avg Unit Price</h3>
-               </div>
-               <div className="relative z-10">
-                  <p className="text-3xl font-bold text-gray-900">
-                    ${metrics.avgOrderValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                  </p>
-                   <p className="text-sm text-gray-400 mt-1">Per unit avg</p>
-               </div>
+            {/* 3. Stock on Hand */}
+            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-xl hover:shadow-2xl transition-shadow duration-300 relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-4 opacity-10">
+                <Package className="w-24 h-24 text-orange-600 transform -rotate-6" />
+              </div>
+              <div className="flex items-center mb-4">
+                <div className="p-3 bg-orange-100 rounded-lg text-orange-600">
+                  <Package className="w-6 h-6" />
+                </div>
+                <h3 className="ml-3 text-lg font-medium text-gray-500">
+                  Stock on Hand
+                </h3>
+              </div>
+              <div className="relative z-10">
+                <p className="text-3xl font-bold text-gray-900">
+                  {metrics.stock_on_hand.toLocaleString()}
+                </p>
+                <p className="text-sm text-gray-400 mt-1">Current Inventory</p>
+              </div>
             </div>
 
-             {/* 4. Stock on Hand */}
-             <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-xl hover:shadow-2xl transition-shadow duration-300 relative overflow-hidden">
-               <div className="absolute top-0 right-0 p-4 opacity-10">
-                  <Package className="w-24 h-24 text-orange-600 transform -rotate-6" />
-               </div>
-               <div className="flex items-center mb-4">
-                  <div className="p-3 bg-orange-100 rounded-lg text-orange-600">
-                    <Package className="w-6 h-6" />
-                  </div>
-                  <h3 className="ml-3 text-lg font-medium text-gray-500">Stock on Hand</h3>
-               </div>
-               <div className="relative z-10">
-                  <p className="text-3xl font-bold text-gray-900">
-                    {metrics.stockOnHand.toLocaleString()}
-                  </p>
-                   <p className="text-sm text-gray-400 mt-1">Current Inventory</p>
-               </div>
+            {/* 4. Top Products */}
+            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-xl hover:shadow-2xl transition-shadow duration-300 relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-4 opacity-10">
+                <CreditCard className="w-24 h-24 text-purple-600 transform rotate-6" />
+              </div>
+              <div className="flex items-center mb-4">
+                <div className="p-3 bg-purple-100 rounded-lg text-purple-600">
+                  <CreditCard className="w-6 h-6" />
+                </div>
+                <h3 className="ml-3 text-lg font-medium text-gray-500">
+                  Top Products
+                </h3>
+              </div>
+              <div className="relative z-10">
+                <p className="text-3xl font-bold text-gray-900">
+                  {metrics.top_product.toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                </p>
+                <p className="text-sm text-gray-400 mt-1">Per unit avg</p>
+              </div>
             </div>
-
           </div>
         </div>
       ) : (
