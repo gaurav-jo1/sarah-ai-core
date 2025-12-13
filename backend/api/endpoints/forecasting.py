@@ -59,7 +59,7 @@ async def get_forecast(product_id: Optional[str] = None, db: Session = Depends(g
                 )
                 response.raise_for_status()
 
-                return response.json()
+                return {"data": df_dict[-3:], "prediction": response.json()}
 
             except httpx.HTTPStatusError as e:
                 raise HTTPException(

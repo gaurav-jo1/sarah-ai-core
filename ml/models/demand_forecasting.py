@@ -1,6 +1,6 @@
 import torch
 from chronos import BaseChronosPipeline
-
+from pandas import DataFrame
 class ChronosForecaster:
     def __init__(self):
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -8,7 +8,7 @@ class ChronosForecaster:
             "amazon/chronos-2", device_map=self.device
         )
 
-    def predict(self, df, prediction_length: int = 2):
+    def predict(self, df: DataFrame, prediction_length: int = 2):
         return self.model.predict_df(
             df,
             prediction_length=prediction_length,
