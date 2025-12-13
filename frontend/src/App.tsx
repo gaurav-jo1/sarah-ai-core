@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Routes, Route, Link, useLocation } from "react-router";
-import { Home, MessageSquare, X, Menu, Database } from "lucide-react";
+import { Home, MessageSquare, X, Menu, Database, ChartNoAxesCombined, Package } from "lucide-react";
 
 import HomePage from "./pages/HomePage";
 import ChatPage from "./pages/ChatPage";
@@ -16,6 +16,16 @@ const App: React.FC = () => {
       title: "Chat",
       path: "/chat",
       src: <MessageSquare className="w-5 h-5" />,
+    },
+    {
+      title: "Forecasting",
+      path: "/forecasting",
+      src: <ChartNoAxesCombined className="w-5 h-5" />,
+    },
+    {
+      title: "Inventory",
+      path: "/inventory",
+      src: <Package className="w-5 h-5" />,
     },
     {
       title: "Data Connect",
@@ -86,6 +96,8 @@ const App: React.FC = () => {
           <Route path="/" element={<HomePage />} />
           <Route path="/chat" element={<ChatPage />} />
           <Route path="/data-connect" element={<DataConnectPage />} />
+          <Route path="/forecasting" element={<div>Forecasting</div>} />
+          <Route path="/inventory" element={<div>Inventory</div>} />
         </Routes>
       </div>
     </div>

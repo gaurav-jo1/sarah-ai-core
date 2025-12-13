@@ -1,0 +1,72 @@
+# === Python bytecode & caches ===
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+*.egg-info/
+build/
+dist/
+
+# === Jupyter ===
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# === Virtual environments ===
+.ml_env/
+.venv/
+venv/
+env/
+ENV/
+
+# === Environment files ===
+.env
+.envrc
+*.env.*
+
+# === Large data / models (usually not included in image) ===
+data/
+datasets/
+*.csv
+*.tsv
+*.jsonl
+*.parquet
+*.h5
+*.pth
+*.pt
+*.ckpt
+*.bin
+models/
+checkpoints/
+outputs/
+wandb/
+logs/
+
+# === IDE / Editor ===
+.idea/
+.vscode/
+*.swp
+
+# === Cache directories ===
+.cache/
+.ruff_cache/
+.mypy_cache/
+.hypothesis/
+
+# === Project notes ===
+Notes.md
+Todo.md
+commands.txt
+test*.ipynb
+
+# === Git ===
+.git
+.gitignore
+
+# === Docker ===
+Dockerfile
+docker-compose*.yml
+.dockerignore
