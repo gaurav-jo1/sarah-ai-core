@@ -6,6 +6,7 @@ from pydantic import BaseModel
 
 app = FastAPI()
 
+
 class PredictRequest(BaseModel):
     df: list[dict]
     prediction_length: int = 2
@@ -23,5 +24,7 @@ async def predict(request: PredictRequest):
     model = ChronosForecaster()
 
     pred = model.predict(df=df, prediction_length=request.prediction_length)
+
+    pred['period'] = pred['period'].dt.strftime('%b %Y')
 
     return pred.to_dict(orient="records")

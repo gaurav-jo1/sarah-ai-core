@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from db.product import Product
 from typing import Optional
 import httpx
+from sqlalchemy import func
 
 router = APIRouter()
 
@@ -20,32 +21,83 @@ def get_db():
 
 
 @router.get("/", status_code=status.HTTP_200_OK)
-async def get_forecast(product_id: Optional[str] = None, db: Session = Depends(get_db)):
+async def get_forecasting(
+    product_id: Optional[str] = None, db: Session = Depends(get_db)
+):
     try:
-        if not product_id:
-            products_list = db.query(Product).first()
-
-            print(f"Product list: {products_list}")
-            product_id = products_list.Product_ID
-
-        products_list = (
-            db.query(Product)
-            .filter(Product.Product_ID == product_id)
-            .order_by(Product.Period.asc())
+        # Get product names
+        products_name = (
+            db.query(Product.Product_ID, Product.Product_Name)
+            .distinct()
+            .order_by(Product.Product_Name)
             .all()
         )
+        product_dict = {
+            product.Product_ID: product.Product_Name for product in products_name
+        }
+        product_dict["All"] = "All Products"  # Add for aggregated view
 
-        df = pd.DataFrame(
-            [
-                {
-                    "product_id": p.Product_ID,
-                    "period": p.Period,
-                    "units_sold": p.Units_Sold,
-                }
-                for p in products_list
-            ]
-        )
+        if not product_id:
+            monthly_sales = (
+                db.query(
+                    Product.Period.label("id"),
+                    func.sum(Product.Units_Sold).label("total_units_sold"),
+                    Product.Period,
+                )
+                .group_by(Product.Period)
+                .order_by(Product.Period)
+                .all()
+            )
 
+            df = pd.DataFrame(
+                [
+                    {
+                        "product_id": "All",
+                        "period": row.Period,
+                        "units_sold": row.total_units_sold,
+                    }
+                    for row in monthly_sales
+                ]
+            )
+
+        else:
+            products_list = (
+                db.query(Product)
+                .filter(Product.Product_ID == product_id)
+                .order_by(Product.Period.asc())
+                .all()
+            )
+
+            if not products_list:
+                raise HTTPException(
+                    status_code=404,
+                    detail=f"Product with ID '{product_id}' not found"
+                )
+
+            df = pd.DataFrame(
+                [
+                    {
+                        "product_id": p.Product_ID,
+                        "period": p.Period,
+                        "units_sold": p.Units_Sold,
+                    }
+                    for p in products_list
+                ]
+            )
+
+        # Check if dataframe is empty
+        if df.empty:
+            raise HTTPException(
+                status_code=404,
+                detail="No data found"
+            )
+
+        # Format response data
+        response_df = df.copy()
+        response_df['period'] = pd.to_datetime(response_df['period']).dt.strftime('%b %Y')
+        response_df = response_df.to_dict(orient="records")
+
+        # Keep original for ML service
         df_dict = df.to_dict(orient="records")
 
         request_payload = {"df": df_dict, "prediction_length": 2}
@@ -59,7 +111,11 @@ async def get_forecast(product_id: Optional[str] = None, db: Session = Depends(g
                 )
                 response.raise_for_status()
 
-                return {"data": df_dict[-3:], "prediction": response.json()}
+                return {
+                    "products_name": product_dict,
+                    "data": response_df[-4:],
+                    "prediction": response.json(),
+                }
 
             except httpx.HTTPStatusError as e:
                 raise HTTPException(
@@ -68,15 +124,15 @@ async def get_forecast(product_id: Optional[str] = None, db: Session = Depends(g
                 )
             except httpx.RequestError as e:
                 raise HTTPException(
-                    status_code=503, detail=f"Prediction service unavailable: {str(e)}"
+                    status_code=503,
+                    detail=f"Prediction service unavailable: {str(e)}",
                 )
 
     except HTTPException:
-        # Re-raise FastAPI exceptions
         raise
     except Exception as _:
-        # Log in production: import logging; logging.error(f"Metrics error: {e}")
+        # Consider logging the actual error: logging.error(f"Forecasting error: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to fetch metrics",
+            detail="Failed to fetch forecast data",
         )
