@@ -75,7 +75,7 @@ const HomePage: React.FC = () => {
   }
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-12 p-7">
       {/* --- Welcome Heading (Appears ONLY if dataExists is false) --- */}
       {!dataExists && (
         <header className="text-center mb-10 p-6 rounded-3xl bg-gray-100 border border-indigo-200 shadow-lg">

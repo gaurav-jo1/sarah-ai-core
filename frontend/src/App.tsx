@@ -5,6 +5,7 @@ import { Home, MessageSquare, X, Menu, Database, ChartNoAxesCombined, Package } 
 import HomePage from "./pages/HomePage";
 import ChatPage from "./pages/ChatPage";
 import DataConnectPage from "./pages/DataConnectPage";
+import Forecasting from "./pages/Forecasting";
 
 const App: React.FC = () => {
   const [open, setOpen] = useState<boolean>(true);
@@ -91,12 +92,12 @@ const App: React.FC = () => {
       </div>
 
       {/* MAIN CONTENT */}
-      <div className="flex-1 h-screen overflow-y-auto p-7">
+      <div className="flex-1 h-screen overflow-y-auto">
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/chat" element={<ChatPage />} />
           <Route path="/data-connect" element={<DataConnectPage />} />
-          <Route path="/forecasting" element={<div>Forecasting</div>} />
+          <Route path="/forecasting" element={<Forecasting />} />
           <Route path="/inventory" element={<div>Inventory</div>} />
         </Routes>
       </div>
