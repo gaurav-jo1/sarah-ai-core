@@ -97,7 +97,7 @@ export const TopProductsChart: React.FC<TopProductsChartProps> = ({ topProducts 
            </h3>
        </div>
 
-       <div className="flex-grow min-h-[150px] relative z-10 bg-transparent">
+       <div className="grow min-h-[150px] relative z-10 bg-transparent">
           <Bar data={data} options={options} />
        </div>
     </div>

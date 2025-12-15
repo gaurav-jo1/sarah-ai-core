@@ -10,7 +10,7 @@ const Forecasting: React.FC = () => {
       <div className="flex flex-col gap-6">
         {/* Toggle Switch */}
         <div className="flex justify-start">
-          <div className="bg-gray-100 p-1 rounded-lg flex items-center inline-flex">
+          <div className="bg-gray-100 p-1 rounded-lg items-center inline-flex">
             <button
               onClick={() => setMetric("Units")}
               className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200 ${

@@ -26,14 +26,14 @@ ChartJS.register(
   Filler
 );
 
-import type { ApiResponse } from "../types/forecast.types";
+import type { UnitsResponse } from "../types/units.types";
 
 // ChartJS registration is already properly set up above
 
 const UnitsForecast: React.FC = () => {
   const [selectedProduct, setSelectedProduct] = useState<string>("All");
   // Initialize with empty structure or null, assuming loading state covers the fetch delay
-  const [forecastData, setForecastData] = useState<ApiResponse | null>(null);
+  const [forecastData, setForecastData] = useState<UnitsResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
   // We need to fetch the list of products from the API or assume a derived list from data
@@ -50,7 +50,7 @@ const UnitsForecast: React.FC = () => {
         params.product_id = productId;
       }
 
-      const response = await axios.get<ApiResponse>(url, { params });
+      const response = await axios.get<UnitsResponse>(url, { params });
       setForecastData(response.data);
 
       // Update product names if available in response
@@ -109,14 +109,14 @@ const UnitsForecast: React.FC = () => {
     const upperDataPoints = [
       ...Array(historical.length - 1).fill(null),
       lastHistoricalValue,
-      ...predictions.map((d) => d["0.9"]),
+      ...predictions.map((d) => d["units_0_9"]),
     ];
 
     // Lower Bound (0.1)
     const lowerDataPoints = [
       ...Array(historical.length - 1).fill(null),
       lastHistoricalValue,
-      ...predictions.map((d) => d["0.1"]),
+      ...predictions.map((d) => d["units_0_1"]),
     ];
 
     const predictionPointRadius = predictionDataPoints.map((_, index) =>
@@ -259,7 +259,7 @@ const UnitsForecast: React.FC = () => {
             Unit Sales Forecasting
           </h1>
           <p className="text-sm text-gray-500 mt-1">
-            Projected unit sales trends and confidence intervals
+            Projected unit sales trends
           </p>
         </div>
 

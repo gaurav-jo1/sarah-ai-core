@@ -173,7 +173,7 @@ async def data_connect(file: UploadFile = File(...), db: Session = Depends(get_d
                 Units_Sold=p.units_sold,
                 Opening_Stock=p.opening_stock,
                 Stock_Received=p.stock_received,
-
+                Revenue=p.revenue
             )
             for p in products_data
         ]

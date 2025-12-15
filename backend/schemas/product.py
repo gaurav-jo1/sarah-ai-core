@@ -14,6 +14,7 @@ class ProductData(BaseModel):
     units_sold: int = Field(alias="Units_Sold")
     opening_stock: int = Field(alias="Opening_Stock")
     stock_received: int = Field(alias="Stock_Received")
+    revenue: float = Field(alias="Revenue")
 
     model_config = {
         "populate_by_name": True,

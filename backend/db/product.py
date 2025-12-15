@@ -17,6 +17,7 @@ class Product(Base):
     Units_Sold = Column(Integer, nullable=False)
     Opening_Stock = Column(Integer, nullable=False)
     Stock_Received = Column(Integer, nullable=False)
+    Revenue = Column(Float, nullable=False)
 
     # Optional: Add index on Period or (Product_ID, Period) for faster queries
     __table_args__ = (
