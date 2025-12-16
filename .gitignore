@@ -9,6 +9,7 @@ Notes.md
 Todo.md
 commands.txt
 *.xlsx
+notebooks
 
 # Backend-specific
 backend/venv/

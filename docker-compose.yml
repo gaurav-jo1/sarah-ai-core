@@ -1,25 +1,14 @@
 services:
-  backend:
-    build: ./backend
-    container_name: backend_c
-    ports:
-      - "8000:8000"
-    volumes:
-      - ./backend:/app
-    environment:
-      - REDIS_URL=redis://redis:6379/0
-    depends_on:
-      - postgres
-      - ml-service
-
-  ml-service:
+  ml-backend:
       build:
-        context: ./ml
+        context: ./ml-backend
         dockerfile: Dockerfile
       ports:
-        - "8001:8001"
+        - "8000:8000"
       volumes:
-      - ./ml:/app
+        - ./ml-backend:/app
+      depends_on:
+        - postgres
 
   frontend:
     build: ./frontend

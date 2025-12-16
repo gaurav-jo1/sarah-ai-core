@@ -6,11 +6,9 @@ from db.product import Product
 from typing import Optional
 import httpx
 from sqlalchemy import func
+from ml.demand_forecasting import ChronosForecaster
 
 router = APIRouter()
-
-ML_SERVICE_URL = "http://ml-service:8001"
-
 
 def get_db():
     db = SessionLocal()
@@ -94,36 +92,25 @@ async def units_forecasting(
         )
         response_df = response_df.to_dict(orient="records")
 
-        # Keep original for ML service
-        df_dict = df.to_dict(orient="records")
+        try:
+            response = await ChronosForecaster().predict_units(df=df)
 
-        request_payload = {"df": df_dict, "prediction_length": 2}
+            return {
+                "products_name": product_dict,
+                "data": response_df[-4:],
+                "prediction": response,
+            }
 
-        async with httpx.AsyncClient() as client:
-            try:
-                response = await client.post(
-                    f"{ML_SERVICE_URL}/predict/units",
-                    json=request_payload,
-                    timeout=30.0,
-                )
-                response.raise_for_status()
-
-                return {
-                    "products_name": product_dict,
-                    "data": response_df[-4:],
-                    "prediction": response.json(),
-                }
-
-            except httpx.HTTPStatusError as e:
-                raise HTTPException(
-                    status_code=e.response.status_code,
-                    detail=f"Prediction service error: {str(e)}",
-                )
-            except httpx.RequestError as e:
-                raise HTTPException(
-                    status_code=503,
-                    detail=f"Prediction service unavailable: {str(e)}",
-                )
+        except httpx.HTTPStatusError as e:
+            raise HTTPException(
+                status_code=e.response.status_code,
+                detail=f"Prediction service error: {str(e)}",
+            )
+        except httpx.RequestError as e:
+            raise HTTPException(
+                status_code=503,
+                detail=f"Prediction service unavailable: {str(e)}",
+            )
 
     except HTTPException:
         raise
@@ -152,7 +139,6 @@ async def revenue_forecasting(
         product_dict["All"] = "All Products"
 
         if not product_id:
-            # query the database (db.query) for table "Product" to get the sum of the Revenue for the unique month-year of all product and the sum of units sales as well.
             monthly_data = (
                 db.query(
                     Product.Period.label("id"),
@@ -177,9 +163,7 @@ async def revenue_forecasting(
                 ]
             )
 
-        # else
         else:
-            # query the database (db.query) for table "Product" to get the product "with that product_id" and get the revenue and units sales
             product_data = (
                 db.query(
                     Product.Period.label("id"),
@@ -191,6 +175,11 @@ async def revenue_forecasting(
                 .order_by(Product.Period)
                 .all()
             )
+
+            if not product_data:
+                raise HTTPException(
+                    status_code=404, detail=f"Revenue with ID '{product_id}' not found"
+                )
 
             df = pd.DataFrame(
                 [
@@ -214,35 +203,25 @@ async def revenue_forecasting(
         )
         response_df = response_df.to_dict(orient="records")
 
-        df_dict = df.to_dict(orient="records")
+        try:
+            response = await ChronosForecaster().predict_revenue(df=df)
 
-        request_payload = {"df": df_dict, "prediction_length": 2}
+            return {
+                "products_name": product_dict,
+                "data": response_df[-4:],
+                "prediction": response,
+            }
 
-        async with httpx.AsyncClient() as client:
-            try:
-                response = await client.post(
-                    f"{ML_SERVICE_URL}/predict/revenue",
-                    json=request_payload,
-                    timeout=30.0,
-                )
-                response.raise_for_status()
-
-                return {
-                    "products_name": product_dict,
-                    "data": response_df[-4:],
-                    "prediction": response.json(),
-                }
-
-            except httpx.HTTPStatusError as e:
-                raise HTTPException(
-                    status_code=e.response.status_code,
-                    detail=f"Prediction service error: {str(e)}",
-                )
-            except httpx.RequestError as e:
-                raise HTTPException(
-                    status_code=503,
-                    detail=f"Prediction service unavailable: {str(e)}",
-                )
+        except httpx.HTTPStatusError as e:
+            raise HTTPException(
+                status_code=e.response.status_code,
+                detail=f"Prediction service error: {str(e)}",
+            )
+        except httpx.RequestError as e:
+            raise HTTPException(
+                status_code=503,
+                detail=f"Prediction service unavailable: {str(e)}",
+            )
 
     except HTTPException:
         raise
