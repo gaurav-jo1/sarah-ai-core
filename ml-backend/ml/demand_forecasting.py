@@ -15,10 +15,9 @@ class ChronosForecaster:
 
         df = df[["product_id", "period", "units_sold"]]
 
-        # Now you can work with the DataFrame
-        print(f"Received DataFrame with {len(df)} rows")
-        print(f"Columns: {df.columns.tolist()}")
-        print(f"Prediction length: {prediction_length}")
+        # print(f"Received DataFrame with {len(df)} rows")
+        # print(f"Columns: {df.columns.tolist()}")
+        # print(f"Prediction length: {prediction_length}")
 
         pred = self.model.predict_df(
             df,
@@ -45,9 +44,9 @@ class ChronosForecaster:
 
         df = df[["product_id", "period", "units_sold", "revenue"]]
 
-        print(f"Received DataFrame with {len(df)} rows")
-        print(f"Columns: {df.columns.tolist()}")
-        print(f"Prediction length: {prediction_length}")
+        # print(f"Received DataFrame with {len(df)} rows")
+        # print(f"Columns: {df.columns.tolist()}")
+        # print(f"Prediction length: {prediction_length}")
 
         pred = self.model.predict_df(
             df,

@@ -32,7 +32,7 @@ def get_metrics(db: Session = Depends(get_db)):
             db.query(Product.Period)
             .distinct()
             .order_by(Product.Period.desc())
-            .limit(4)
+            .limit(6)
             .all()
         )
         if not last_4_periods:

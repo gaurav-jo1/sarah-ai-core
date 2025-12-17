@@ -97,7 +97,7 @@ async def units_forecasting(
 
             return {
                 "products_name": product_dict,
-                "data": response_df[-4:],
+                "data": response_df[-6:],
                 "prediction": response,
             }
 
@@ -208,7 +208,7 @@ async def revenue_forecasting(
 
             return {
                 "products_name": product_dict,
-                "data": response_df[-4:],
+                "data": response_df[-6:],
                 "prediction": response,
             }
 
