@@ -6,8 +6,10 @@ from db.database import SessionLocal
 from schemas.product import ProductData, MetricsResponse
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, status
 from collections import defaultdict
+from ml.chat_model import ChatGoogle
 
 router = APIRouter()
+
 
 def get_db():
     db = SessionLocal()
@@ -16,9 +18,12 @@ def get_db():
     finally:
         db.close()
 
+
 @router.get("/")
 def home():
-    return {"message": "Welcome to the FastAPI application!"}
+    ml = ChatGoogle().chat_test()
+    return {"message": "Welcome to the FastAPI application!", "ml": ml}
+
 
 @router.get(
     "/metrics",
@@ -38,7 +43,7 @@ def get_metrics(db: Session = Depends(get_db)):
         if not last_4_periods:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="No periods found in the database"
+                detail="No periods found in the database",
             )
         last_4_periods = [p[0] for p in last_4_periods]
 
@@ -52,7 +57,7 @@ def get_metrics(db: Session = Depends(get_db)):
         if not products:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="No products found for recent periods"
+                detail="No products found for recent periods",
             )
 
         # Group by period (unchanged)
@@ -102,7 +107,6 @@ def get_metrics(db: Session = Depends(get_db)):
             "units_sold": total_units_sold,
             "stock_on_hand": total_stock_on_hand,
             "top_products": top_products_dict,  # Overall top 4
-
             "latest_monthly_revenue": total_revenue[latest_period],
             "latest_units_sold": total_units_sold[latest_period],
             "latest_stock_on_hand": total_stock_on_hand[latest_period],
@@ -118,8 +122,9 @@ def get_metrics(db: Session = Depends(get_db)):
         # Log in production: import logging; logging.error(f"Metrics error: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to fetch metrics"
+            detail="Failed to fetch metrics",
         )
+
 
 @router.post("/data_connect", status_code=status.HTTP_201_CREATED)
 async def data_connect(file: UploadFile = File(...), db: Session = Depends(get_db)):
@@ -173,7 +178,7 @@ async def data_connect(file: UploadFile = File(...), db: Session = Depends(get_d
                 Units_Sold=p.units_sold,
                 Opening_Stock=p.opening_stock,
                 Stock_Received=p.stock_received,
-                Revenue=p.revenue
+                Revenue=p.revenue,
             )
             for p in products_data
         ]
