@@ -12,17 +12,13 @@ class ChatGoogle:
             api_key=api_settings.GEMINI_API_KEY,
             temperature=0,
         )
-        self.db = api_settings.DATABASE_URL
+        self.db = SQLDatabase.from_uri(api_settings.DATABASE_URL)
+        self.toolkit = SQLDatabaseToolkit(db=self.db, llm=self.llm)
+        self.tools = self.toolkit.get_tools()
 
-    def chat(self, question: str):
-        db = SQLDatabase.from_uri(self.db)
-        # print(f"Dialect: {db.dialect}")
-        # print(f"Available tables: {db.get_usable_table_names()}")
+        self.system_message = self._generate_prompt()
 
-        toolkit = SQLDatabaseToolkit(db=db, llm=self.llm)
-
-        tools = toolkit.get_tools()
-
+    def _generate_prompt(self, top_k: int = 5):
         system_prompt = """
             You are an agent designed to interact with a SQL database.
             Given an input question, create a syntactically correct {dialect} query to run,
@@ -45,26 +41,21 @@ class ChatGoogle:
 
             Then you should query the schema of the most relevant tables.
             """.format(
-            dialect=db.dialect,
-            top_k=5,
+            dialect=self.db.dialect,
+            top_k=top_k,
         )
 
-        agent = create_agent(
-            self.llm,
-            tools,
-            system_prompt=system_prompt,
+        return system_prompt
+
+    def chat(self, question: str):
+        agent = create_agent(self.llm, self.tools, system_prompt=self.system_message)
+
+        result = agent.invoke(
+            {"messages": [{"role": "user", "content": question}]},
+            config={"recursion_limit": 50},
         )
-
-        try:
-            result = agent.invoke(
-                {"messages": [{"role": "user", "content": question}]},
-                config={"recursion_limit": 50},
-            )
-
-        except Exception as e:
-            return f"Error: {str(e)}"
 
         last_message = result["messages"][-1]
-        content_text = last_message["content"][0]
-
-        return content_text
+        if isinstance(last_message.content, list):
+            return last_message.content[0].get("text", str(last_message.content[0]))
+        return last_message.content
