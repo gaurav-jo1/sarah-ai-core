@@ -6,6 +6,7 @@ import HomePage from "./pages/HomePage";
 import ChatPage from "./pages/ChatPage";
 import DataConnectPage from "./pages/DataConnectPage";
 import Forecasting from "./pages/Forecasting";
+import Inventory from "./pages/Inventory";
 
 const App: React.FC = () => {
   const [open, setOpen] = useState<boolean>(true);
@@ -98,7 +99,7 @@ const App: React.FC = () => {
           <Route path="/chat" element={<ChatPage />} />
           <Route path="/data-connect" element={<DataConnectPage />} />
           <Route path="/forecasting" element={<Forecasting />} />
-          <Route path="/inventory" element={<div>Inventory</div>} />
+          <Route path="/inventory" element={<Inventory />} />
         </Routes>
       </div>
     </div>
