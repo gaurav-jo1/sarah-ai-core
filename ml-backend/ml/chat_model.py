@@ -8,7 +8,7 @@ from settings.settings import api_settings
 class ChatGoogle:
     def __init__(self):
         self.llm = ChatGoogleGenerativeAI(
-            model="gemini-3-flash-preview",
+            model="gemini-2.5-flash",
             api_key=api_settings.GEMINI_API_KEY,
             temperature=0,
         )
