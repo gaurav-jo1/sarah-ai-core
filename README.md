@@ -1,61 +1,125 @@
-# Mini Sarah.AI – Autonomous Supply Chain Brain Prototype
+# Mini Sarah AI 🧠🚀
 
-**"A fully autonomous AI COO for consumer brands – in one weekend."**
+**An autonomous supply-chain brain for consumer goods brands.**
 
-This is a **working end-to-end prototype** of what Sarah AI does today, built specifically to impress the Sarah team and prove I deeply understand their mission: replace spreadsheets, legacy ERPs, and manual ops with an intelligent, self-driving supply-chain operating system.
+> *Inspired by Sarah AI ("The AI-native operating system for consumer goods brands"), Mini Sarah AI is a working prototype designed to replace legacy ERPs with an intelligent, self-driving operating system.*
 
-* 🚀 Live Demo: https://mini-sarah-ai.vercel.app
-* 📹 2-Min Loom Walkthrough: https://www.loom.com/share/your-video-id
-* 📂 GitHub Repo: https://github.com/gaurav-jo1/CPG-Demand-Forecaster-Project.git
+[![React](https://img.shields.io/badge/React-19.0-blue?logo=react&logoColor=white)](https://react.dev/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.124-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![LangChain](https://img.shields.io/badge/LangChain-1.2-1C3C3C?logo=langchain&logoColor=white)](https://python.langchain.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-18.1-336791?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Redis](https://img.shields.io/badge/Redis-7.2-DC382D?logo=redis&logoColor=white)](https://redis.io/)
+[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## What This Prototype Actually Does (Zero Hype)
+---
 
-1. **Ingests real ERP exports**
-   → Upload any CSV / Excel file (sales history, inventory snapshots, POs – exactly what founders email you today)
+## 📋 Overview
 
-2. **Real-time AI Demand Forecasting**
-   → PyTorch LSTM trained on-the-fly per SKU
-   → Predicts next 30 days of demand with one click
+Mini Sarah AI is a comprehensive dashboard and autonomous agent system for managing supply chains. It leverages advanced AI for forecasting, anomaly detection, and natural language interaction to empower business owners to make data-driven decisions instantly.
 
-3. **Autonomous Replenishment Engine**
-   → Calculates reorder points, safety stock, optimal order quantities
-   → Detects demand anomalies (z-score spikes)
-   → Generates actionable suggestions with urgency scoring
+This project demonstrates the power of:
+- **Foundational Models for Time Series**: Using Amazon Chronos for accurate demand forecasting.
+- **Large Language Models**: Utilizing Gemini for natural language queries about business data.
+- **Modern Web Stack**: A responsive, high-performance UI built with React & Tailwind.
 
-4. **Human-in-the-Loop Execution**
-   → Suggestions queue → one-click approve/reject
-   → On approval → simulates execution (email supplier, create PO, etc.)
+## ✨ Features
 
-5. **Chat Interface**
-   → Ask natural questions:
-   “When do we run out of Protein Bars?”
-   “What should we reorder this week?”
-   → Sarah answers instantly with charts and recommendations
+### 1. 🏠 Command Center (Homepage)
+A unified view of your business health.
+- **Key Metrics**: Real-time display of Monthly Revenue, Units Sold, Stock on Hand.
+- **Visual Analytics**: Interactive charts showing last 6 month revenue trends and top performing products.
+- **ERP-style Dashboard**: Instant visibility into what matters most.
 
-6. **ERP-style Dashboard**
-   → Live KPI cards: Inventory Turns, Weeks of Supply, Forecast Accuracy, OTIF, etc.
+### 2. 💬 Sarah AI Chat (Chatpage)
+Talk to your supply chain.
+- **Natural Language Queries**: Ask "Which products are the best selling in 2025?" and get instant, data-backed answers.
+- **Powered by Gemini**: Uses Google's Gemini API with RAG (Retrieval-Augmented Generation) on your database.
+- **Persistent History**: Chat history is stored in Redis, allowing you to pick up where you left off.
 
-## Tech Stack (Deliberately Close to Sarah’s Production Stack)
+### 3. 📈 Advanced Forecasting
+Predict the future with state-of-the-art AI.
+- **Amazon Chronos 2**: Utilizes the latest Chronos foundational models for high-accuracy time-series forecasting.
+- **Dual-Mode**: Toggle between **Revenue Forecasting** and **Unit Sales Forecasting**.
+- **Next Month Predictions**: Get immediate insight into upcoming periods.
 
-| Layer              | Technology Used                  | Sarah Production Equivalent      |
-|-------------------|-----------------------------------|------------------------------------|
-| Frontend          | React + TypeScript + Tailwind + Recharts | React/Next.js                     |
-| Backend           | FastAPI (Python)                  | Node.js + Python services         |
-| Database          | PostgreSQL + Redis                | PostgreSQL + Redis                |
-| ML / Forecasting  | PyTorch LSTM (on-the-fly training) | DeepSeekOCR + custom models       |
-| Orchestration     | Redis queues + simple sagas       | Temporal + Kafka/RabbitMQ         |
-| DevOps            | Docker Compose + GitHub Actions + GCP Cloud Run | Docker/K8s + Terraform + GCP      |
-| Observability     | Basic structured logs + request tracing | OpenTelemetry + Prometheus        |
+### 4. 📦 Autonomous Inventory (In Development 🚧)
+Self-driving inventory management.
+- **AI Replenishment**: Calculates reorder points, safety stock, and optimal order quantities automatically.
+- **Anomaly Detection**: Detects demand spikes (z-score analysis) to prevent stockouts.
+- **Actionable Suggestions**: Human-in-the-loop workflow for approving AI-generated urgency scores and suggestions.
 
-## How to Run Locally (5 minutes)
+### 5. 🔌 Data Connect
+Seamless integration with your data.
+- **File Upload**: Drag-and-drop CSV or Excel files to instantly populate the system.
+- **Planned Integrations**:
+  - Cloud Storage (Google Drive, Dropbox) 🚧
+  - Existing ERP Systems 🚧
 
-```bash
-# 1. Clone & enter
-git clone https://github.com/yourname/mini-sarah-ai.git
-cd mini-sarah-ai
+---
 
-# 2. Start everything
-docker-compose up --build
+## 🛠️ Tech Stack
 
-# 3. Open browser
-http://localhost:5173/
+### Frontend
+- **Framework**: React 19 (Vite)
+- **Styling**: Tailwind CSS v4
+- **Visualization**: Chart.js / React-Chartjs-2
+- **Language**: TypeScript
+
+### Backend
+- **API**: FastAPI (Python)
+- **Database**: PostgreSQL (Data), Redis (Cache & Chat History)
+- **AI/ML**:
+  - **Forecasting**: Amazon Chronos (via HuggingFace/Torch)
+  - **LLM**: Google Gemini API via LangChain
+- **Orchestration**: Docker & Docker Compose
+
+---
+
+## 🚀 Getting Started
+
+Follow these steps to get a local copy up and running.
+
+### Prerequisites
+- [Docker](https://www.docker.com/get-started) & Docker Compose installed on your machine.
+- API Keys for Google Gemini (if running the chat feature locally).
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/gaurav-jo1/mini-sarah-ai.git
+   cd mini-sarah-ai
+   ```
+
+2. **Configure Environment Variables**
+   Create a `.env` file in the `ml-backend` directory (or wherever required, check `docker-compose.yml`):
+   ```bash
+   # ml-backend/.env
+   DATABASE_URL=postgresql://postgres_user:postgres_pass@postgres:5432/myapp_db
+   REDIS_URL=redis://redis:6379/0
+   GOOGLE_API_KEY=your_gemini_api_key_here
+   ```
+
+3. **Start the Application**
+   Run the entire stack with Docker Compose:
+   ```bash
+   docker-compose up --build
+   ```
+
+4. **Access the Dashboard**
+   Open your browser and navigate to:
+   - Frontend: `http://localhost:5173`
+   - Backend API Docs: `http://localhost:8000/docs`
+
+---
+
+## 📄 License
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
+---
+
+> Built with ❤️ by [Gaurav Joshi](https://github.com/gaurav-jo1)

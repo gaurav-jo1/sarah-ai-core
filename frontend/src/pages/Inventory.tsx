@@ -5,12 +5,12 @@ const Inventory: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
       <div className="max-w-2xl w-full bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100">
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-8 text-center">
+        <div className="bg-linear-to-r from-blue-600 to-indigo-600 p-8 text-center">
           <div className="mx-auto bg-white/20 w-20 h-20 rounded-full flex items-center justify-center backdrop-blur-sm mb-4">
              <Brain className="w-10 h-10 text-white" />
           </div>
           <h1 className="text-3xl font-bold text-white mb-2">Inventory Intelligence</h1>
-          <p className="text-blue-100 text-lg">AI-Powered Stock Management & Forecasting</p>
+          <p className="text-blue-100 text-lg">AI-Powered Stock Management</p>
         </div>
 
         <div className="p-10 text-center">

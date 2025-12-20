@@ -7,6 +7,7 @@ test*.ipynb
 test*.py
 Notes.md
 Todo.md
+test_README.md
 commands.txt
 *.xlsx
 notebooks
