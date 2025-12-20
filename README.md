@@ -1,8 +1,8 @@
-# Mini Sarah AI 🧠🚀
+# Sarah AI Core 🧠🚀
 
 **An autonomous supply-chain brain for consumer goods brands.**
 
-> *Inspired by Sarah AI ("The AI-native operating system for consumer goods brands"), Mini Sarah AI is a working prototype designed to replace legacy ERPs with an intelligent, self-driving operating system.*
+> *Inspired by Sarah AI ("The AI-native operating system for consumer goods brands"), Sarah AI Core is a working prototype designed to replace legacy ERPs with an intelligent, self-driving operating system.*
 
 [![React](https://img.shields.io/badge/React-19.0-blue?logo=react&logoColor=white)](https://react.dev/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.124-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
@@ -18,12 +18,12 @@
 
 ## 📋 Overview
 
-Mini Sarah AI is a comprehensive dashboard and autonomous agent system for managing supply chains. It leverages advanced AI for forecasting, anomaly detection, and natural language interaction to empower business owners to make data-driven decisions instantly.
+Sarah AI Core is a comprehensive dashboard and autonomous agent system for managing supply chains. It leverages advanced AI for forecasting, anomaly detection, and natural language interaction to empower business owners to make data-driven decisions instantly.
 
 This project demonstrates the power of:
 - **Foundational Models for Time Series**: Using Amazon Chronos for accurate demand forecasting.
 - **Large Language Models**: Utilizing Gemini for natural language queries about business data.
-- **Modern Web Stack**: A responsive, high-performance UI built with React & Tailwind.
+- **Modern Web Stack**: A high-performance UI built with React & Tailwind.
 
 ## ✨ Features
 
@@ -90,8 +90,8 @@ Follow these steps to get a local copy up and running.
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/gaurav-jo1/mini-sarah-ai.git
-   cd mini-sarah-ai
+   git clone https://github.com/gaurav-jo1/sarah-ai-core.git
+   cd sarah-ai-core
    ```
 
 2. **Configure Environment Variables**

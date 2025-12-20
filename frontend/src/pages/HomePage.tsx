@@ -81,7 +81,7 @@ const HomePage: React.FC = () => {
         <header className="text-center mb-10 p-6 rounded-3xl bg-gray-100 border border-indigo-200 shadow-lg">
           <h1 className="text-6xl font-extrabold text-gray-900 leading-snug tracking-tighter">
             Welcome to the{" "}
-            <span className="text-indigo-600">Mini Sarah AI</span>
+            <span className="text-indigo-600">Sarah AI Core</span>
           </h1>
           <p className="mt-4 text-xl text-gray-600 max-w-4xl mx-auto font-light">
             Real-time AI demand forecasting with automated reorder points,
@@ -188,7 +188,7 @@ const HomePage: React.FC = () => {
           </h2>
 
           <p className="text-xl text-gray-600 mb-10 max-w-xl mx-auto font-light">
-            It looks like you're new here. Mini Sarah AI needs your product
+            It looks like you're new here. Sarah AI Core needs your product
             demand history to begin generating accurate forecasts and actionable
             inventory suggestions.
           </p>
