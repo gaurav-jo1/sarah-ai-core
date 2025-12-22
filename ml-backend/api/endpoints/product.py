@@ -30,7 +30,6 @@ def home():
 )
 def get_metrics(db: Session = Depends(get_db)):
     try:
-        # Get last 4 periods (unchanged, but added check)
         last_4_periods = (
             db.query(Product.Period)
             .distinct()
@@ -45,7 +44,6 @@ def get_metrics(db: Session = Depends(get_db)):
             )
         last_4_periods = [p[0] for p in last_4_periods]
 
-        # Fetch products for those periods (unchanged)
         products = (
             db.query(Product)
             .filter(Product.Period.in_(last_4_periods))
@@ -58,66 +56,54 @@ def get_metrics(db: Session = Depends(get_db)):
                 detail="No products found for recent periods",
             )
 
-        # Group by period (unchanged)
         grouped = defaultdict(list)
         for p in products:
             grouped[p.Period].append(p)
 
-        # Compute aggregates per period
         total_revenue = {}
         total_units_sold = {}
         total_stock_on_hand = {}
         all_top_products = {}  # Overall top products across all periods
 
         for period, group_products in grouped.items():
-            # 1. Total Revenue (rounded for money)
             total_revenue[period] = round(
                 sum(p.Current_Price * p.Units_Sold for p in group_products), 2
             )
 
-            # 2. Total Units Sold
             total_units_sold[period] = sum(p.Units_Sold for p in group_products)
 
-            # 3. Total Stock on Hand
             total_stock_on_hand[period] = sum(
                 (p.Opening_Stock + p.Stock_Received - p.Units_Sold)
                 for p in group_products
             )
 
-            # 4. Accumulate top products (overall, across periods)
             for p in group_products:
                 if p.Product_Name not in all_top_products:
                     all_top_products[p.Product_Name] = p.Units_Sold
                 else:
                     all_top_products[p.Product_Name] += p.Units_Sold
 
-        # Get top 4 overall (unchanged)
         top_4 = sorted(all_top_products.items(), key=lambda x: x[1], reverse=True)[:4]
         top_products_dict = dict(top_4)
 
-        # Get latest period (first in descending order)
         latest_period = last_4_periods[0]
 
-        # Build response data with ALL fields from model
         response_data = {
-            # Dict fields
             "monthly_revenue": total_revenue,
             "units_sold": total_units_sold,
             "stock_on_hand": total_stock_on_hand,
-            "top_products": top_products_dict,  # Overall top 4
+            "top_products": top_products_dict,
             "latest_monthly_revenue": total_revenue[latest_period],
             "latest_units_sold": total_units_sold[latest_period],
             "latest_stock_on_hand": total_stock_on_hand[latest_period],
-            "latest_top_products": len(top_4),  # Assuming this is the count (e.g., 4)
+            "latest_top_products": len(top_4),
         }
 
         return MetricsResponse(**response_data)
 
     except HTTPException:
-        # Re-raise FastAPI exceptions
         raise
     except Exception as _:
-        # Log in production: import logging; logging.error(f"Metrics error: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to fetch metrics",
@@ -132,7 +118,6 @@ async def data_connect(file: UploadFile = File(...), db: Session = Depends(get_d
     filename = file.filename
     extension = os.path.splitext(filename)[1].lower()
 
-    # 1. Read file based on extension
     try:
         contents = await file.read()
         if extension == ".csv":
@@ -153,7 +138,6 @@ async def data_connect(file: UploadFile = File(...), db: Session = Depends(get_d
             "processed_rows": 0,
         }
 
-    # 2. Validate and parse all rows efficiently
     try:
         products_data = [
             ProductData.model_validate(row, from_attributes=True)

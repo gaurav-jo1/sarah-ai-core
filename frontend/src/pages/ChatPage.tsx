@@ -4,7 +4,9 @@ import { Send } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 
 const ChatPage: React.FC = () => {
-  const [messages, setMessages] = useState<{ id: string; text: string; sender: "user" | "ai"; timestamp: Date }[]>([]);
+  const [messages, setMessages] = useState<
+    { id: string; text: string; sender: "user" | "ai"; timestamp: Date }[]
+  >([]);
   const [inputText, setInputText] = useState("");
   const [loading, setLoading] = useState(false);
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
@@ -12,7 +14,6 @@ const ChatPage: React.FC = () => {
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
-
 
   React.useEffect(() => {
     scrollToBottom();
@@ -56,7 +57,6 @@ const ChatPage: React.FC = () => {
     const userMessage = inputText;
     setInputText("");
 
-    // Add user message immediately
     setMessages((prev) => [
       ...prev,
       {
@@ -76,10 +76,10 @@ const ChatPage: React.FC = () => {
         session_id: storedSessionId || undefined,
       });
 
-      // Assuming API returns { response: "string" } or similar. Adjusting based on standard patterns.
-      // If the previous code just did console.log(response), I'll assume response.data.response or response.data is the text.
-      // Let's protect against various response shapes.
-      const aiText = response.data.response || response.data.message || JSON.stringify(response.data);
+      const aiText =
+        response.data.response ||
+        response.data.message ||
+        JSON.stringify(response.data);
 
       setMessages((prev) => [
         ...prev,
@@ -122,7 +122,11 @@ const ChatPage: React.FC = () => {
       </div>
 
       {/* Messages Area - Only visible when started */}
-      <div className={`flex-1 overflow-y-auto w-full max-w-4xl mx-auto px-4 pt-24 pb-32 transition-opacity duration-500 ${hasStarted ? "opacity-100" : "opacity-0"}`}>
+      <div
+        className={`flex-1 overflow-y-auto w-full max-w-4xl mx-auto px-4 pt-24 pb-32 transition-opacity duration-500 ${
+          hasStarted ? "opacity-100" : "opacity-0"
+        }`}
+      >
         {messages.map((msg) => (
           <div
             key={msg.id}
@@ -139,11 +143,22 @@ const ChatPage: React.FC = () => {
             >
               <ReactMarkdown
                 components={{
-                  strong: ({ ...props }) => <span className="font-bold" {...props} />,
-                  ul: ({ ...props }) => <ul className="list-disc ml-4 space-y-1 my-2" {...props} />,
-                  ol: ({ ...props }) => <ol className="list-decimal ml-4 space-y-1 my-2" {...props} />,
+                  strong: ({ ...props }) => (
+                    <span className="font-bold" {...props} />
+                  ),
+                  ul: ({ ...props }) => (
+                    <ul className="list-disc ml-4 space-y-1 my-2" {...props} />
+                  ),
+                  ol: ({ ...props }) => (
+                    <ol
+                      className="list-decimal ml-4 space-y-1 my-2"
+                      {...props}
+                    />
+                  ),
                   li: ({ ...props }) => <li className="pl-1" {...props} />,
-                  p: ({ ...props }) => <p className="mb-1 last:mb-0" {...props} />,
+                  p: ({ ...props }) => (
+                    <p className="mb-1 last:mb-0" {...props} />
+                  ),
                 }}
               >
                 {msg.text}
@@ -156,7 +171,9 @@ const ChatPage: React.FC = () => {
         {loading && (
           <div className="flex w-full justify-start mb-6">
             <div className="bg-white px-6 py-4 rounded-2xl rounded-bl-none border border-slate-100 shadow-sm flex items-center space-x-2">
-              <span className="text-sm font-medium text-slate-400">Thinking</span>
+              <span className="text-sm font-medium text-slate-400">
+                Thinking
+              </span>
               <div className="flex space-x-1">
                 <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
                 <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
@@ -194,9 +211,9 @@ const ChatPage: React.FC = () => {
             </button>
           </form>
           {!hasStarted && (
-             <p className="text-center text-slate-400 mt-4 text-sm font-medium animate-pulse">
-               Start a conversation to see the magic happen
-             </p>
+            <p className="text-center text-slate-400 mt-4 text-sm font-medium animate-pulse">
+              Start a conversation to see the magic happen
+            </p>
           )}
         </div>
       </div>

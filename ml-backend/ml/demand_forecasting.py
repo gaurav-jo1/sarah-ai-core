@@ -3,6 +3,7 @@ from chronos import BaseChronosPipeline
 import pandas as pd
 from pandas import DataFrame
 
+
 class ChronosForecaster:
     def __init__(self):
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -14,10 +15,6 @@ class ChronosForecaster:
         df = pd.DataFrame(df)
 
         df = df[["product_id", "period", "units_sold"]]
-
-        # print(f"Received DataFrame with {len(df)} rows")
-        # print(f"Columns: {df.columns.tolist()}")
-        # print(f"Prediction length: {prediction_length}")
 
         pred = self.model.predict_df(
             df,
@@ -39,14 +36,10 @@ class ChronosForecaster:
 
         return pred.to_dict(orient="records")
 
-    async def predict_revenue(self, df:DataFrame, prediction_length:int = 2):
+    async def predict_revenue(self, df: DataFrame, prediction_length: int = 2):
         df = pd.DataFrame(df)
 
         df = df[["product_id", "period", "units_sold", "revenue"]]
-
-        # print(f"Received DataFrame with {len(df)} rows")
-        # print(f"Columns: {df.columns.tolist()}")
-        # print(f"Prediction length: {prediction_length}")
 
         pred = self.model.predict_df(
             df,

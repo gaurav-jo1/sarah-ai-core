@@ -10,6 +10,7 @@ from ml.demand_forecasting import ChronosForecaster
 
 router = APIRouter()
 
+
 def get_db():
     db = SessionLocal()
     try:
@@ -32,7 +33,7 @@ async def units_forecasting(
         product_dict = {
             product.Product_ID: product.Product_Name for product in products_name
         }
-        product_dict["All"] = "All Products"  # Add for aggregated view
+        product_dict["All"] = "All Products"
 
         if not product_id:
             monthly_sales = (
@@ -81,11 +82,9 @@ async def units_forecasting(
                 ]
             )
 
-        # Check if dataframe is empty
         if df.empty:
             raise HTTPException(status_code=404, detail="No data found")
 
-        # Format response data
         response_df = df.copy()
         response_df["period"] = pd.to_datetime(response_df["period"]).dt.strftime(
             "%b %Y"
@@ -115,7 +114,6 @@ async def units_forecasting(
     except HTTPException:
         raise
     except Exception as _:
-        # Consider logging the actual error: logging.error(f"Forecasting error: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to fetch forecast data",
@@ -193,7 +191,6 @@ async def revenue_forecasting(
                 ]
             )
 
-        # Return or process df as needed
         if df.empty:
             raise HTTPException(status_code=404, detail="No data found")
 
@@ -226,7 +223,6 @@ async def revenue_forecasting(
     except HTTPException:
         raise
     except Exception as _:
-        # Consider logging the actual error: logging.error(f"Forecasting error: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to fetch forecast data",

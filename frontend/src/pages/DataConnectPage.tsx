@@ -1,32 +1,27 @@
 import React, { useState, useCallback, useMemo } from "react";
-// Importing icons from lucide-react as requested
+
 import { Upload, FileText, Database, Cloud, Settings } from "lucide-react";
 import axios from "axios";
 import { useNavigate } from "react-router";
 
-// Define the type for the upload status
 type UploadStatus = "success" | "error" | null;
 
-// The main component for the Data Connect Page
 const DataConnectPage: React.FC = () => {
-  // Corrected state name and typed as File | null
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [uploadStatus, setUploadStatus] = useState<UploadStatus>(null);
 
   const navigate = useNavigate();
 
-  // Memoized file name display
   const fileNameDisplay = useMemo(() => {
     if (!selectedFile) return "No file selected";
     const name = selectedFile.name;
-    // Truncate long names for display
+
     return name.length > 30
       ? `${name.substring(0, 15)}...${name.slice(-10)}`
       : name;
   }, [selectedFile]);
 
-  // Handle file drop or selection
   const handleFileChange = useCallback((file: File | undefined) => {
     setUploadStatus(null);
     if (
@@ -40,24 +35,21 @@ const DataConnectPage: React.FC = () => {
     } else {
       setSelectedFile(null);
       setUploadStatus("error");
-      // Display message without using alert()
+
       setTimeout(() => setUploadStatus(null), 3000);
     }
   }, []);
 
-  // Event handler for drag events (DragOver, DragLeave)
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.currentTarget.classList.add("border-blue-500", "bg-blue-50");
   };
 
-  // Event handler for drag leave
   const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.currentTarget.classList.remove("border-blue-500", "bg-blue-50");
   };
 
-  // Event handler for file drop
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.currentTarget.classList.remove("border-blue-500", "bg-blue-50");
@@ -66,7 +58,6 @@ const DataConnectPage: React.FC = () => {
     }
   };
 
-  // Event handler for input file change
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     handleFileChange(e.target.files?.[0]);
   };
@@ -84,17 +75,20 @@ const DataConnectPage: React.FC = () => {
       const formData = new FormData();
       formData.append("file", selectedFile);
 
-      const res = await axios.post("http://127.0.0.1:8000/product/data_connect", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const res = await axios.post(
+        "http://127.0.0.1:8000/product/data_connect",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
       console.log(res.data, res.status);
       setUploadStatus("success");
       setSelectedFile(null);
       navigate("/");
-
     } catch (err) {
       console.log("Error uploading file:", err);
       setUploadStatus("error");
@@ -103,7 +97,6 @@ const DataConnectPage: React.FC = () => {
     }
   };
 
-  // Dynamic styling for the upload button
   const buttonClass = `
         w-full py-3 px-6 rounded-xl font-semibold transition-all duration-300
         ${

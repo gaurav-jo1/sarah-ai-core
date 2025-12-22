@@ -30,7 +30,6 @@ interface RevenueChartProps {
 export const RevenueChart: React.FC<RevenueChartProps> = ({
   monthlyRevenue,
 }) => {
-  // Sort keys to ensure chronological order (Oldest -> Newest)
   const sortedKeys = Object.keys(monthlyRevenue).sort();
   const labels = sortedKeys;
   const dataPoints = sortedKeys.map((key) => monthlyRevenue[key]);
@@ -42,9 +41,9 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
         fill: true,
         label: "Monthly Revenue",
         data: dataPoints,
-        borderColor: "rgb(79, 70, 229)", // Indigo-600
+        borderColor: "rgb(79, 70, 229)",
         backgroundColor: "rgba(79, 70, 229, 0.1)",
-        tension: 0.4, // Smooth curve
+        tension: 0.4,
         pointBackgroundColor: "rgb(79, 70, 229)",
         pointBorderColor: "#fff",
         pointHoverBackgroundColor: "#fff",

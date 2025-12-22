@@ -28,16 +28,12 @@ ChartJS.register(
 
 import type { UnitsResponse } from "../types/units.types";
 
-// ChartJS registration is already properly set up above
-
 const UnitsForecast: React.FC = () => {
   const [selectedProduct, setSelectedProduct] = useState<string>("All");
-  // Initialize with empty structure or null, assuming loading state covers the fetch delay
+
   const [forecastData, setForecastData] = useState<UnitsResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
-  // We need to fetch the list of products from the API or assume a derived list from data
-  // The ApiResponse schema has 'products_name'
   const [productNames, setProductNames] = useState<Record<string, string>>({});
 
   const fetchForecast = async (productId: string) => {
@@ -53,14 +49,11 @@ const UnitsForecast: React.FC = () => {
       const response = await axios.get<UnitsResponse>(url, { params });
       setForecastData(response.data);
 
-      // Update product names if available in response
       if (response.data.products_name) {
-          setProductNames(response.data.products_name);
+        setProductNames(response.data.products_name);
       }
-
     } catch (error) {
       console.error("Failed to fetch forecast data", error);
-      // Ensure we handle error gracefully, maybe clear data or show error message
     } finally {
       setLoading(false);
     }
@@ -70,7 +63,6 @@ const UnitsForecast: React.FC = () => {
     fetchForecast(selectedProduct);
   }, [selectedProduct]);
 
-  // Calculate bridge index (last index of historical data)
   const bridgeIndex = useMemo(() => {
     if (!forecastData || !forecastData.data) return -1;
     return forecastData.data.length - 1;
@@ -82,37 +74,34 @@ const UnitsForecast: React.FC = () => {
     const historical = forecastData.data;
     const predictions = forecastData.prediction;
 
-    // Combine labels
     const labels = [
       ...historical.map((d) => d.period),
       ...predictions.map((d) => d.period),
     ];
 
-    // Historical Data Dataset
     const historicalDataPoints = [
       ...historical.map((d) => d.units_sold),
       ...Array(predictions.length).fill(null),
     ];
 
-    // Prediction Data Dataset
     const lastHistorical = historical[historical.length - 1];
-    // Safety check if historical data is empty
-    const lastHistoricalValue = lastHistorical ? lastHistorical.units_sold : null;
+
+    const lastHistoricalValue = lastHistorical
+      ? lastHistorical.units_sold
+      : null;
 
     const predictionDataPoints = [
       ...Array(historical.length - 1).fill(null),
-      lastHistoricalValue, // Bridge point
+      lastHistoricalValue,
       ...predictions.map((d) => d.predictions),
     ];
 
-    // Upper Bound (0.9)
     const upperDataPoints = [
       ...Array(historical.length - 1).fill(null),
       lastHistoricalValue,
       ...predictions.map((d) => d["units_0_9"]),
     ];
 
-    // Lower Bound (0.1)
     const lowerDataPoints = [
       ...Array(historical.length - 1).fill(null),
       lastHistoricalValue,
@@ -120,11 +109,11 @@ const UnitsForecast: React.FC = () => {
     ];
 
     const predictionPointRadius = predictionDataPoints.map((_, index) =>
-        index === bridgeIndex ? 0 : 4
+      index === bridgeIndex ? 0 : 4
     );
 
     const predictionPointHoverRadius = predictionDataPoints.map((_, index) =>
-        index === bridgeIndex ? 0 : 6
+      index === bridgeIndex ? 0 : 6
     );
 
     return {
@@ -145,7 +134,7 @@ const UnitsForecast: React.FC = () => {
           borderColor: "transparent",
           backgroundColor: "rgba(255, 99, 132, 0.1)",
           pointRadius: 0,
-          fill: 3, // Fill to Lower Bound dataset
+          fill: 3,
           tension: 0.3,
         },
         {
@@ -171,84 +160,89 @@ const UnitsForecast: React.FC = () => {
     };
   }, [forecastData, bridgeIndex]);
 
-  const options: ChartOptions<"line"> = useMemo(() => ({
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        position: "top",
-        labels: {
-          usePointStyle: true,
-          boxWidth: 8,
-          font: {
-            family: "Inter, sans-serif",
-            size: 12,
-          },
-          filter: (item) => {
-            // Only show "Historical Sales" and "Predicted Sales" in the legend
-            return (
-              item.text === "Historical Unit Sales" || item.text === "Predicted Unit Sales"
-            );
+  const options: ChartOptions<"line"> = useMemo(
+    () => ({
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: "top",
+          labels: {
+            usePointStyle: true,
+            boxWidth: 8,
+            font: {
+              family: "Inter, sans-serif",
+              size: 12,
+            },
+            filter: (item) => {
+              return (
+                item.text === "Historical Unit Sales" ||
+                item.text === "Predicted Unit Sales"
+              );
+            },
           },
         },
-      },
-      title: {
-        display: false,
-      },
-      tooltip: {
-        mode: "index",
-        intersect: false,
-        backgroundColor: "rgba(255, 255, 255, 0.9)",
-        titleColor: "#1f2937",
-        bodyColor: "#4b5563",
-        borderColor: "#e5e7eb",
-        borderWidth: 1,
-        padding: 10,
-        boxPadding: 4,
-        usePointStyle: true,
-        filter: (tooltipItem) => {
-            // Hide the prediction tooltip at the bridge index
-            if (tooltipItem.dataset.label === "Predicted Unit Sales" && tooltipItem.dataIndex === bridgeIndex) {
-                return false;
+        title: {
+          display: false,
+        },
+        tooltip: {
+          mode: "index",
+          intersect: false,
+          backgroundColor: "rgba(255, 255, 255, 0.9)",
+          titleColor: "#1f2937",
+          bodyColor: "#4b5563",
+          borderColor: "#e5e7eb",
+          borderWidth: 1,
+          padding: 10,
+          boxPadding: 4,
+          usePointStyle: true,
+          filter: (tooltipItem) => {
+            if (
+              tooltipItem.dataset.label === "Predicted Unit Sales" &&
+              tooltipItem.dataIndex === bridgeIndex
+            ) {
+              return false;
             }
             return true;
-        }
-      },
-    },
-    scales: {
-      x: {
-        grid: {
-          display: false,
-        },
-        ticks: {
-          font: {
-            family: "Inter, sans-serif",
           },
         },
       },
-      y: {
-        title: {
-          display: true,
-          text: "Units Sold",
-          font: {
-            family: "Inter, sans-serif",
-            weight: "bold",
+      scales: {
+        x: {
+          grid: {
+            display: false,
+          },
+          ticks: {
+            font: {
+              family: "Inter, sans-serif",
+            },
           },
         },
-        grid: {
-          color: "#f3f4f6",
-        },
-        border: {
-          display: false,
+        y: {
+          title: {
+            display: true,
+            text: "Units Sold",
+            font: {
+              family: "Inter, sans-serif",
+              weight: "bold",
+            },
+          },
+          grid: {
+            color: "#f3f4f6",
+          },
+          border: {
+            display: false,
+          },
         },
       },
-    },
-    interaction: {
-      mode: "nearest",
-      axis: "x",
-      intersect: false,
-    },
-  }), [bridgeIndex]);
+      interaction: {
+        mode: "nearest",
+        axis: "x",
+        intersect: false,
+      },
+    }),
+    [bridgeIndex]
+  );
 
   return (
     <div className="space-y-6">
@@ -310,16 +304,15 @@ const UnitsForecast: React.FC = () => {
         </div>
 
         <div className="h-[400px] w-full relative">
-            {chartData ? (
-                <Line options={options} data={chartData} />
-            ) : (
-                <div className="flex items-center justify-center h-full text-gray-400">
-                    {loading ? 'Loading data...' : 'No data available'}
-                </div>
-            )}
+          {chartData ? (
+            <Line options={options} data={chartData} />
+          ) : (
+            <div className="flex items-center justify-center h-full text-gray-400">
+              {loading ? "Loading data..." : "No data available"}
+            </div>
+          )}
         </div>
       </div>
-
     </div>
   );
 };
