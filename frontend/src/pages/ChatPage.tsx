@@ -116,7 +116,7 @@ const ChatPage: React.FC = () => {
           hasStarted ? "top-4 scale-75" : "top-[40%] -translate-y-1/2 scale-100"
         }`}
       >
-        <h1 className="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 drop-shadow-sm tracking-tight">
+        <h1 className="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500 drop-shadow-sm tracking-tight">
           Sarah AI
         </h1>
       </div>

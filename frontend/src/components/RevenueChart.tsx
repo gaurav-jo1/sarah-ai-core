@@ -30,7 +30,29 @@ interface RevenueChartProps {
 export const RevenueChart: React.FC<RevenueChartProps> = ({
   monthlyRevenue,
 }) => {
-  const sortedKeys = Object.keys(monthlyRevenue).sort();
+  const sortedKeys = Object.keys(monthlyRevenue).sort((a, b) => {
+    const months: { [key: string]: number } = {
+      Jan: 0,
+      Feb: 1,
+      Mar: 2,
+      Apr: 3,
+      May: 4,
+      Jun: 5,
+      Jul: 6,
+      Aug: 7,
+      Sep: 8,
+      Oct: 9,
+      Nov: 10,
+      Dec: 11,
+    };
+    const parseDate = (dateStr: string) => {
+      const parts = dateStr.split("-");
+      if (parts.length !== 2) return new Date(0); // Fallback
+      const [mon, year] = parts;
+      return new Date(parseInt(year), months[mon] ?? 0, 1);
+    };
+    return parseDate(a).getTime() - parseDate(b).getTime();
+  });
   const labels = sortedKeys;
   const dataPoints = sortedKeys.map((key) => monthlyRevenue[key]);
 

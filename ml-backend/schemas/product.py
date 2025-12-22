@@ -41,11 +41,11 @@ class ProductDataResponse(ProductData):
         return datetime.strptime(self.period, "%Y-%m").strftime("%B")
 
 class MetricsResponse(BaseModel):
-    latest_monthly_revenue: float
-    latest_units_sold: int
-    latest_stock_on_hand: int
-    latest_top_products: int
     monthly_revenue: Dict[str, float]
     units_sold: Dict[str, int]
     stock_on_hand: Dict[str, int]
     top_products :Dict[str, int]
+    latest_monthly_revenue: float
+    latest_units_sold: int
+    latest_stock_on_hand: int
+    latest_top_products: int

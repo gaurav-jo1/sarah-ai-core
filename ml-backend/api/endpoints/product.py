@@ -66,6 +66,8 @@ def get_metrics(db: Session = Depends(get_db)):
         all_top_products = {}  # Overall top products across all periods
 
         for period, group_products in grouped.items():
+            period = pd.to_datetime(period, format="%Y-%m").strftime("%b-%Y")
+
             total_revenue[period] = round(
                 sum(p.Current_Price * p.Units_Sold for p in group_products), 2
             )
@@ -84,9 +86,12 @@ def get_metrics(db: Session = Depends(get_db)):
                     all_top_products[p.Product_Name] += p.Units_Sold
 
         top_4 = sorted(all_top_products.items(), key=lambda x: x[1], reverse=True)[:4]
+
         top_products_dict = dict(top_4)
 
-        latest_period = last_4_periods[0]
+        latest_period = pd.to_datetime(last_4_periods[0], format="%Y-%m").strftime(
+            "%b-%Y"
+        )
 
         response_data = {
             "monthly_revenue": total_revenue,
