@@ -17,4 +17,4 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Build Docker Image
-        run: docker build -t backend_image ./backend
+        run: docker build -t ml-backend_image ./ml-backend
