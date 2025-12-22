@@ -6,7 +6,6 @@ from db.database import SessionLocal
 from schemas.product import ProductData, MetricsResponse
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, status
 from collections import defaultdict
-from ml.chat_model import ChatGoogle
 
 router = APIRouter()
 
@@ -21,8 +20,7 @@ def get_db():
 
 @router.get("/")
 def home():
-    ml = ChatGoogle().chat_test()
-    return {"message": "Welcome to the FastAPI application!", "ml": ml}
+    return {"message": "Welcome to the FastAPI application!"}
 
 
 @router.get(

@@ -13,9 +13,41 @@ const ChatPage: React.FC = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+
   React.useEffect(() => {
     scrollToBottom();
   }, [messages, loading]);
+
+  React.useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        const storedSessionId = localStorage.getItem("session_id");
+        const response = await axios.get("http://127.0.0.1:8000/chat/check", {
+          params: storedSessionId ? { session_id: storedSessionId } : {},
+        });
+
+        const { session_id, history } = response.data;
+
+        if (session_id) {
+          localStorage.setItem("session_id", session_id);
+        }
+
+        if (history && Array.isArray(history)) {
+          const historyMessages = history.map((msg: any, index: number) => ({
+            id: `history-${index}-${Date.now()}`,
+            text: String(msg.content),
+            sender: (msg.role === "ai" ? "ai" : "user") as "user" | "ai",
+            timestamp: new Date(),
+          }));
+          setMessages(historyMessages);
+        }
+      } catch (error) {
+        console.error("Failed to fetch chat history", error);
+      }
+    };
+
+    fetchHistory();
+  }, []);
 
   const sendMessage = async (e?: React.FormEvent) => {
     e?.preventDefault();
@@ -38,8 +70,10 @@ const ChatPage: React.FC = () => {
     setLoading(true);
 
     try {
+      const storedSessionId = localStorage.getItem("session_id");
       const response = await axios.post("http://127.0.0.1:8000/chat", {
         message: userMessage,
+        session_id: storedSessionId || undefined,
       });
 
       // Assuming API returns { response: "string" } or similar. Adjusting based on standard patterns.

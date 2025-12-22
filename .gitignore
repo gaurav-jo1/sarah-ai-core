@@ -11,6 +11,7 @@ test_README.md
 commands.txt
 *.xlsx
 notebooks
+Desc.md
 
 # Backend-specific
 backend/venv/

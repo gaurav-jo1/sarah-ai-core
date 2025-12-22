@@ -1,27 +1,40 @@
-# from typing import Optional
-from ml.chat_model import ChatGoogle
+from ml.chat_model import ChatModel
 from schemas.chat_schema import ChatRequest
 from fastapi import APIRouter, status, HTTPException
-# from redis.memory_manager import ChatMemoryManager
+from redis_client.memory_manager import ChatMemoryManager
+import uuid
+from typing import Optional
 
 router = APIRouter()
-# @router.get("/check", status_code=status.HTTP_200_OK)
-# async def check_user(user_id: Optional[str] = None):
-#     memory = ChatMemoryManager()
 
-#     if user_id and memory.session_exists(user_id):
-#         history = memory.get_history(user_id)
+@router.get("/check", status_code=status.HTTP_200_OK)
+async def check_user(session_id: Optional[str] = None):
+    memory = ChatMemoryManager()
 
-#         return {"history": history, "status": status.HTTP_200_OK}
+    if session_id and memory.session_exists(session_id):
+        history = memory.get_history(session_id)
 
-#     return {"history": False, "status": status.HTTP_200_OK}
+        return {"history": history, "session_id": session_id}
+
+    else:
+        session_id = uuid.uuid4()
+
+        return {"history": [],"session_id": session_id}
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def chat_model(request: ChatRequest):
+    memory = ChatMemoryManager()
+
     try:
-        result = ChatGoogle().chat(question=request.message)
+        result = ChatModel().chat(question=request.message)
+
+        memory.add_message(request.session_id, role="user", content=request.message)
+        memory.add_message(request.session_id, role="ai", content=result)
+
         return {"response": result}
+
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"Error generating response: {str(e)}"
+            status_code=500,
+            detail=f"Error generating response: {str(e)}"
         )

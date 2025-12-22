@@ -1,6 +1,8 @@
 # Use Python 3.11 (stable, well-supported by all your packages)
 FROM python:3.11-slim
 
+ENV PYTHONUNBUFFERED 1
+
 WORKDIR /app
 
 # Install system dependencies needed for scientific packages

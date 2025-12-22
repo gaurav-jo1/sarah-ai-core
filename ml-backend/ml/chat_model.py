@@ -1,16 +1,17 @@
 from langchain_google_genai import ChatGoogleGenerativeAI
+# from langchain_groq import ChatGroq
 from langchain_community.utilities import SQLDatabase
 from langchain_community.agent_toolkits import SQLDatabaseToolkit
 from langchain.agents import create_agent
 from settings.settings import api_settings
 
 
-class ChatGoogle:
+class ChatModel:
     def __init__(self):
         self.llm = ChatGoogleGenerativeAI(
-            model="gemini-2.5-flash",
+            model="gemini-3-flash-preview",
             api_key=api_settings.GEMINI_API_KEY,
-            temperature=0,
+            temperature=0.1,
         )
         self.db = SQLDatabase.from_uri(api_settings.DATABASE_URL)
         self.toolkit = SQLDatabaseToolkit(db=self.db, llm=self.llm)
@@ -48,6 +49,12 @@ class ChatGoogle:
         return system_prompt
 
     def chat(self, question: str):
+
+        print(f"Dialect: {self.db.dialect}")
+        print(f"Available tables: {self.db.get_usable_table_names()}")
+        print(f"Question user asked: {question}")
+        # print(f'Sample output: {self.db.run("SELECT * FROM Artist LIMIT 5;")}')
+
         agent = create_agent(self.llm, self.tools, system_prompt=self.system_message)
 
         result = agent.invoke(

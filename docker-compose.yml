@@ -52,7 +52,7 @@ services:
   #     - postgres
 
   redis:
-    image: redis:7.2.12-alpine
+    image: redis/redis-stack-server:latest
     container_name: redis_c
     ports:
       - "6379:6379"
