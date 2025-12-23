@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useMemo } from "react";
-
-import { Upload, FileText, Database, Cloud, Settings } from "lucide-react";
+import { Upload, FileText, Database, Cloud, Settings, CheckCircle, AlertCircle } from "lucide-react";
 import axios from "axios";
 import { useNavigate } from "react-router";
 
@@ -97,186 +96,190 @@ const DataConnectPage: React.FC = () => {
     }
   };
 
-  const buttonClass = `
-        w-full py-3 px-6 rounded-xl font-semibold transition-all duration-300
-        ${
-          selectedFile && !isUploading
-            ? "bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/50 cursor-pointer"
-            : "bg-gray-200 text-gray-500 cursor-not-allowed"
-        }
-    `;
-
   return (
-    <div className="min-h-full flex flex-col items-center p-4 sm:p-8 bg-white">
-      <header className="text-center mb-10 max-w-2xl">
-        <h1 className="text-4xl font-extrabold text-gray-900 mb-2">
-          Connect Your Data
-        </h1>
-        <p className="text-lg text-gray-500">
-          Get started by uploading a file or explore future integration options
-          below.
-        </p>
-      </header>
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
+      <div className="max-w-4xl w-full bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100">
 
-      <main className="w-full max-w-4xl flex flex-col lg:flex-row gap-8">
-        {/* --------------------- 1. File Upload Card --------------------- */}
-        <div className="lg:w-1/2 p-6 bg-white shadow-xl rounded-2xl border border-gray-100">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-            <FileText className="w-6 h-6 mr-2 text-blue-500" />
-            Upload Local Files (MVP)
-          </h2>
-
-          {/* Drag & Drop Zone */}
-          <div
-            className="p-8 border-4 border-dashed rounded-xl cursor-pointer transition duration-200"
-            style={{
-              borderColor: selectedFile
-                ? "rgb(59 130 246 / 0.7)"
-                : uploadStatus === "error"
-                ? "rgb(239 68 68 / 0.7)"
-                : "rgb(209 213 219 / 0.7)",
-            }}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
-            onClick={() =>
-              document.getElementById("file-upload-input")?.click()
-            }
-          >
-            <div className="flex flex-col items-center justify-center text-center">
-              <Upload className="w-10 h-10 text-gray-400 mb-3" />
-              <p className="text-lg font-medium text-gray-700">
-                Drag & drop your file here
-              </p>
-              <p className="text-sm text-gray-500 mt-1">
-                or{" "}
-                <span className="text-blue-600 font-semibold hover:text-blue-700">
-                  browse
-                </span>{" "}
-                to upload
-              </p>
-              <p className="text-xs text-gray-400 mt-2">
-                Supported formats: CSV, Excel (.xls, .xlsx)
-              </p>
-            </div>
-            <input
-              id="file-upload-input"
-              type="file"
-              accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
-              onChange={handleInputChange}
-              className="hidden"
-            />
+        {/* Header Section (Matches Inventory.tsx style) */}
+        <div className="bg-linear-to-r from-blue-600 to-indigo-600 p-8 text-center">
+          <div className="mx-auto bg-white/20 w-20 h-20 rounded-full flex items-center justify-center backdrop-blur-sm mb-4">
+            <Database className="w-10 h-10 text-white" />
           </div>
-
-          {/* File Status Area */}
-          <div className="mt-6">
-            <div className="flex justify-between items-center p-3 bg-gray-100 rounded-lg">
-              <span
-                className={`font-mono text-sm truncate ${
-                  selectedFile ? "text-gray-700" : "text-gray-400"
-                }`}
-              >
-                {fileNameDisplay}
-              </span>
-              {selectedFile && (
-                <button
-                  onClick={() => {
-                    setSelectedFile(null);
-                    setUploadStatus(null);
-                  }}
-                  className="text-red-500 hover:text-red-700 text-sm font-medium"
-                >
-                  Remove
-                </button>
-              )}
-            </div>
-
-            {/* Status Messages */}
-            <div className="mt-4 h-6 text-center">
-              {isUploading && (
-                <div className="flex items-center justify-center text-blue-600 font-medium">
-                  <div className="w-4 h-4 border-2 border-blue-300 border-t-blue-600 rounded-full animate-spin mr-2"></div>
-                  Processing data...
-                </div>
-              )}
-              {uploadStatus === "success" && (
-                <p className="text-green-600 font-medium">
-                  ✅ Data connected successfully!
-                </p>
-              )}
-              {uploadStatus === "error" && (
-                <p className="text-red-600 font-medium">
-                  ⚠️ Error: Please upload a valid CSV or Excel file.
-                </p>
-              )}
-            </div>
-
-            <button
-              onClick={handleConnectData}
-              disabled={!selectedFile || isUploading}
-              className={buttonClass}
-            >
-              {isUploading ? "Connecting..." : "Connect Data"}
-            </button>
-          </div>
-        </div>
-
-        {/* --------------------- 2. Coming Soon Section --------------------- */}
-        <div className="lg:w-1/2 p-6 bg-white shadow-xl rounded-2xl border border-gray-100">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-            <Database className="w-6 h-6 mr-2 text-indigo-500" />
-            Enterprise Integrations
-          </h2>
-
-          <p className="text-gray-600 mb-6">
-            We are actively working on expanding our data connectivity options
-            to provide seamless integration with your existing systems and cloud
-            providers.
+          <h1 className="text-3xl font-bold text-white mb-2">Connect Your Data</h1>
+          <p className="text-blue-100 text-lg">
+            Seamlessly integrate your business data sources
           </p>
+        </div>
 
-          <div className="space-y-4">
-            {/* Integration Item: Cloud/Drive */}
-            <div className="flex items-center p-4 bg-indigo-50 rounded-xl border border-indigo-200 shadow-sm">
-              <Cloud className="w-6 h-6 text-indigo-500 shrink-0 mr-4" />
-              <div>
-                <h3 className="font-semibold text-gray-800">
-                  Cloud Storage & Drive
-                </h3>
-                <p className="text-sm text-indigo-700">
-                  Connect Google Drive, Dropbox, and cloud buckets.
-                </p>
+        <div className="p-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+            {/* Left Column: File Upload (The functional part) */}
+            <div className="space-y-6">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="p-2 bg-blue-50 rounded-lg text-blue-600">
+                  <FileText className="w-6 h-6" />
+                </div>
+                <h2 className="text-xl font-semibold text-slate-800">
+                  Upload Local Files
+                </h2>
               </div>
-              <span className="ml-auto text-xs font-semibold px-2 py-1 bg-indigo-200 text-indigo-800 rounded-full whitespace-nowrap">
-                Q1 '26
-              </span>
+
+              {/* Drag & Drop Zone */}
+              <div
+                className={`p-8 border-2 border-dashed rounded-xl cursor-pointer transition-all duration-200 flex flex-col items-center justify-center text-center
+                  ${
+                    selectedFile
+                      ? "border-blue-500 bg-blue-50/50"
+                      : uploadStatus === "error"
+                      ? "border-red-400 bg-red-50/50"
+                      : "border-slate-300 hover:border-blue-400 hover:bg-slate-50"
+                  }
+                `}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                onClick={() => document.getElementById("file-upload-input")?.click()}
+                style={{ minHeight: "200px" }}
+              >
+                <Upload className={`w-12 h-12 mb-4 ${selectedFile ? "text-blue-500" : "text-slate-400"}`} />
+
+                <p className="text-lg font-medium text-slate-700">
+                  {selectedFile ? "File selected" : "Drag & drop your file here"}
+                </p>
+                <p className="text-sm text-slate-500 mt-2">
+                  or <span className="text-blue-600 font-semibold hover:underline">browse</span> to upload
+                </p>
+                <p className="text-xs text-slate-400 mt-3">
+                  Supported: CSV, Excel (.xls, .xlsx)
+                </p>
+
+                <input
+                  id="file-upload-input"
+                  type="file"
+                  accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+                  onChange={handleInputChange}
+                  className="hidden"
+                />
+              </div>
+
+              {/* File Status & Actions */}
+              <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
+                <div className="flex justify-between items-center mb-4">
+                  <span className={`font-mono text-sm max-w-[200px] truncate ${selectedFile ? "text-slate-700" : "text-slate-400 italic"}`}>
+                    {fileNameDisplay}
+                  </span>
+                  {selectedFile && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedFile(null);
+                        setUploadStatus(null);
+                      }}
+                      className="text-red-500 hover:text-red-700 text-xs font-semibold uppercase tracking-wider"
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
+
+                 {/* Status Messages */}
+                 <div className="mb-4 min-h-[1.5rem] flex items-center justify-center text-sm">
+                  {isUploading && (
+                    <span className="flex items-center text-blue-600">
+                      <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mr-2"></div>
+                      Processing data...
+                    </span>
+                  )}
+                  {uploadStatus === "success" && (
+                     <span className="flex items-center text-green-600 font-medium">
+                       <CheckCircle className="w-4 h-4 mr-1.5" />
+                       Data connected successfully!
+                     </span>
+                  )}
+                  {uploadStatus === "error" && (
+                    <span className="flex items-center text-red-600 font-medium">
+                      <AlertCircle className="w-4 h-4 mr-1.5" />
+                      Invalid file type. Please try again.
+                    </span>
+                  )}
+                </div>
+
+                <button
+                  onClick={handleConnectData}
+                  disabled={!selectedFile || isUploading}
+                  className={`
+                    w-full py-3 px-6 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center
+                    ${
+                      selectedFile && !isUploading
+                        ? "bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/30 active:transform active:scale-95"
+                        : "bg-slate-200 text-slate-400 cursor-not-allowed"
+                    }
+                  `}
+                >
+                  {isUploading ? "Connecting..." : "Connect Data"}
+                </button>
+              </div>
             </div>
 
-            {/* Integration Item: ERP/Systems */}
-            <div className="flex items-center p-4 bg-purple-50 rounded-xl border border-purple-200 shadow-sm">
-              <Settings className="w-6 h-6 text-purple-500 shrink-0 mr-4" />
-              <div>
-                <h3 className="font-semibold text-gray-800">
-                  Existing ERP Systems
-                </h3>
-                <p className="text-sm text-purple-700">
-                  Direct connections to SAP, Oracle, and custom APIs.
+            {/* Right Column: Coming Soon / Future Integrations */}
+            <div className="flex flex-col justify-center">
+              <div className="mb-6">
+                <h2 className="text-xl font-semibold text-slate-800 mb-2">
+                  Enterprise Integrations
+                </h2>
+                <p className="text-slate-600 text-sm leading-relaxed">
+                   We are currently building direct connectors for major cloud storage and ERP systems.
                 </p>
               </div>
-              <span className="ml-auto text-xs font-semibold px-2 py-1 bg-purple-200 text-purple-800 rounded-full whitespace-nowrap">
-                Q2 '26
-              </span>
-            </div>
-          </div>
 
-          <div className="mt-6 p-4 bg-gray-100 rounded-lg text-sm text-center text-gray-600">
-            Need a specific integration?{" "}
-            <a href="#" className="text-blue-600 hover:underline font-medium">
-              Let us know
-            </a>{" "}
-            what's most important to you.
+              <div className="bg-slate-50 rounded-xl p-6 border border-slate-200 w-full">
+                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">Coming Soon</h3>
+                <ul className="space-y-4">
+                  {/* Cloud Drive */}
+                  <li className="flex items-start">
+                    <div className="p-2 bg-indigo-50 rounded-lg text-indigo-600 mr-3 shrink-0">
+                      <Cloud className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <span className="block text-slate-700 font-medium">Cloud Storage & Drive</span>
+                      <span className="text-xs text-slate-500">Google Drive, Dropbox, S3 buckets</span>
+                      <div className="mt-1">
+                        <span className="inline-block px-2 py-0.5 bg-indigo-100 text-indigo-700 text-[10px] font-bold rounded-full">
+                          Q1 '26
+                        </span>
+                      </div>
+                    </div>
+                  </li>
+
+                  {/* ERP */}
+                  <li className="flex items-start">
+                    <div className="p-2 bg-purple-50 rounded-lg text-purple-600 mr-3 shrink-0">
+                      <Settings className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <span className="block text-slate-700 font-medium">ERP System Sync</span>
+                      <span className="text-xs text-slate-500">SAP, Oracle, Netsuite direct sync</span>
+                       <div className="mt-1">
+                        <span className="inline-block px-2 py-0.5 bg-purple-100 text-purple-700 text-[10px] font-bold rounded-full">
+                          Q2 '26
+                        </span>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+
+                <div className="mt-6 pt-6 border-t border-slate-200 text-center">
+                   <p className="text-xs text-slate-500">
+                    Need a specific integration? <a href="#" className="text-blue-600 hover:text-blue-700 font-medium">Contact us</a>
+                   </p>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 };
