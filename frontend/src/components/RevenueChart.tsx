@@ -66,10 +66,8 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
         borderColor: "rgb(79, 70, 229)",
         backgroundColor: "rgba(79, 70, 229, 0.1)",
         tension: 0.4,
-        pointBackgroundColor: "rgb(79, 70, 229)",
-        pointBorderColor: "#fff",
-        pointHoverBackgroundColor: "#fff",
-        pointHoverBorderColor: "rgb(79, 70, 229)",
+        pointRadius: 4,
+        pointHoverRadius: 6,
       },
     ],
   };

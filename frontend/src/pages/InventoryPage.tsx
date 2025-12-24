@@ -1,7 +1,7 @@
 import React from 'react';
 import { Hammer, Brain, HardHat } from 'lucide-react';
 
-const Inventory: React.FC = () => {
+const InventoryPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
       <div className="max-w-2xl w-full bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100">
@@ -55,4 +55,4 @@ const Inventory: React.FC = () => {
   );
 };
 
-export default Inventory;
+export default InventoryPage;

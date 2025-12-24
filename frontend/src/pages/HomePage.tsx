@@ -75,7 +75,7 @@ const HomePage: React.FC = () => {
   }
 
   return (
-    <div className="space-y-12 p-7">
+    <div className="space-y-12 p-7 bg-slate-50 h-full">
       {/* --- Welcome Heading (Appears ONLY if dataExists is false) --- */}
       {!dataExists && (
         <header className="text-center mb-10 p-6 rounded-3xl bg-gray-100 border border-indigo-200 shadow-lg">
@@ -202,7 +202,6 @@ const HomePage: React.FC = () => {
             Start by Connecting Data
           </Link>
 
-          {/* Optional: Add a subtle fallback message for actual API error */}
           {error && (
             <div className="mt-8 text-sm text-red-500">
               **Technical Note:** There was an issue connecting to the

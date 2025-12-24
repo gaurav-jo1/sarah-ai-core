@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router";
-import { Home, MessageSquare, X, Menu, Database, ChartNoAxesCombined, Package } from "lucide-react";
+import { Home, MessageSquare, Menu, Database, ChartNoAxesCombined, Package } from "lucide-react";
 
 const Sidebar: React.FC = () => {
   const [open, setOpen] = useState(true);
@@ -24,14 +24,14 @@ const Sidebar: React.FC = () => {
       {/* HEADER: Logo & Close/Open Logic */}
       <div className="flex justify-between items-center mb-6 h-10">
         <div
-          className="flex items-center justify-center w-full cursor-pointer h-full"
+          className="flex items-center justify-center w-full h-full"
           onClick={() => !open && setOpen(true)}
           onMouseEnter={() => setHeaderHovered(true)}
           onMouseLeave={() => setHeaderHovered(false)}
         >
           {open ? (
             <div className="flex justify-between items-center w-full">
-              <span className="text-xl font-bold bg-gradient-to-tr from-blue-600 to-blue-400 bg-clip-text text-transparent whitespace-nowrap overflow-hidden">
+              <span className="text-xl font-bold bg-linear-to-tr from-blue-600 to-blue-400 bg-clip-text text-transparent whitespace-nowrap overflow-hidden cursor-default">
                 Sarah AI
               </span>
               <button
@@ -41,14 +41,14 @@ const Sidebar: React.FC = () => {
                 }}
                 className="p-1 rounded-full hover:bg-gray-100 text-gray-500 transition-colors"
               >
-                <X className="w-5 h-5" />
+                <Menu className="w-6 h-6 text-blue-600 animate-in fade-in zoom-in duration-200 cursor-pointer" />
               </button>
             </div>
           ) : (
             // Closed State
             <div className="flex items-center justify-center w-full h-full">
               {headerHovered ? (
-                <Menu className="w-6 h-6 text-blue-600 animate-in fade-in zoom-in duration-200" />
+                <Menu className="w-6 h-6 text-blue-600 animate-in fade-in zoom-in duration-200 cursor-pointer" />
               ) : (
                 <span className="text-xl font-bold text-blue-600 animate-in fade-in zoom-in duration-200">
                   S

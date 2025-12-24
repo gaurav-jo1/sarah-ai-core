@@ -6,15 +6,13 @@ import HomePage from "./pages/HomePage";
 import ChatPage from "./pages/ChatPage";
 import DataConnectPage from "./pages/DataConnectPage";
 import Forecasting from "./pages/Forecasting";
-import Inventory from "./pages/Inventory";
+import Inventory from "./pages/InventoryPage";
 
 const App: React.FC = () => {
   return (
     <div className="flex h-screen bg-white">
-      {/* SIDEBAR */}
       <Sidebar />
 
-      {/* MAIN CONTENT */}
       <div className="flex-1 h-screen overflow-y-auto">
         <Routes>
           <Route path="/" element={<HomePage />} />

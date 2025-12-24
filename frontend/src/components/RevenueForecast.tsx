@@ -287,7 +287,7 @@ const RevenueForecast: React.FC = () => {
 
       {/* Summary / Insights - MOVED TO TOP */}
       {forecastData && forecastData.prediction.length > 0 && (
-        <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100 max-w-sm">
+        <div className="bg-white p-4 rounded-xl border border-blue-100 max-w-sm">
           <p className="text-sm text-gray-500">Next Month Prediction</p>
           <p className="text-xl font-bold text-blue-700 mt-1">
             {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(forecastData.prediction[0].predictions)}{" "}

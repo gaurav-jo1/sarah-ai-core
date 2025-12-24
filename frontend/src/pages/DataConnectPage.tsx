@@ -75,7 +75,7 @@ const DataConnectPage: React.FC = () => {
       formData.append("file", selectedFile);
 
       const res = await axios.post(
-        "http://127.0.0.1:8000/product/data_connect",
+        "http://127.0.0.1:8000/data_connect",
         formData,
         {
           headers: {
@@ -184,7 +184,7 @@ const DataConnectPage: React.FC = () => {
                 </div>
 
                  {/* Status Messages */}
-                 <div className="mb-4 min-h-[1.5rem] flex items-center justify-center text-sm">
+                 <div className="mb-4 min-h-6 flex items-center justify-center text-sm">
                   {isUploading && (
                     <span className="flex items-center text-blue-600">
                       <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mr-2"></div>
