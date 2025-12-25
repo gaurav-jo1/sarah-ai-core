@@ -18,8 +18,8 @@ class Product(Base):
     Opening_Stock = Column(Integer, nullable=False)
     Stock_Received = Column(Integer, nullable=False)
     Revenue = Column(Float, nullable=False)
+    Stock_On_Hand = Column(Integer, nullable=False)
 
-    # Optional: Add index on Period or (Product_ID, Period) for faster queries
     __table_args__ = (
         UniqueConstraint('Product_ID', 'Period', name='uix_product_period'),
         Index('ix_product_period', 'Product_ID', 'Period'),
