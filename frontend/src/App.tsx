@@ -6,7 +6,7 @@ import HomePage from "./pages/HomePage";
 import ChatPage from "./pages/ChatPage";
 import DataConnectPage from "./pages/DataConnectPage";
 import Forecasting from "./pages/Forecasting";
-import Inventory from "./pages/InventoryPage";
+import InventoryPageDev from "./pages/InventoryPageDev";
 
 const App: React.FC = () => {
   return (
@@ -19,7 +19,7 @@ const App: React.FC = () => {
           <Route path="/chat" element={<ChatPage />} />
           <Route path="/data-connect" element={<DataConnectPage />} />
           <Route path="/forecasting" element={<Forecasting />} />
-          <Route path="/inventory" element={<Inventory />} />
+          <Route path="/inventory" element={<InventoryPageDev />} />
         </Routes>
       </div>
     </div>

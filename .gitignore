@@ -1,4 +1,5 @@
 # === Project-specific ignores ===
+tests
 
 # Machine Learning / Data Science
 .ml_env

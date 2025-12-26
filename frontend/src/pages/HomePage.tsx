@@ -29,7 +29,6 @@ const HomePage: React.FC = () => {
           "http://127.0.0.1:8000/product/metrics"
         );
 
-        // validate response data
         const parsed = metricsResponseSchema.parse(response.data);
 
         if (Object.keys(parsed).length > 0) {
