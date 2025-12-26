@@ -6,6 +6,20 @@ import { DollarSign, Activity, AlertTriangle } from "lucide-react";
 import type { InventoryItem } from "../types/inventory.types";
 import { InventoryDistributionChart } from "./InventoryDistributionChart";
 
+// Vibrant color palette for categories
+const VIBRANT_COLORS = [
+  { background: 'rgba(239, 68, 68, 0.8)', border: 'rgba(220, 38, 38, 1)' }, // Vibrant Red
+  { background: 'rgba(59, 130, 246, 0.8)', border: 'rgba(37, 99, 235, 1)' }, // Electric Blue
+  { background: 'rgba(245, 158, 11, 0.8)', border: 'rgba(217, 119, 6, 1)' }, // Vibrant Amber
+  { background: 'rgba(16, 185, 129, 0.8)', border: 'rgba(5, 150, 105, 1)' }, // Emerald Green
+  { background: 'rgba(139, 92, 246, 0.8)', border: 'rgba(124, 58, 237, 1)' }, // Purple
+  { background: 'rgba(236, 72, 153, 0.8)', border: 'rgba(219, 39, 119, 1)' }, // Hot Pink
+  { background: 'rgba(14, 165, 233, 0.8)', border: 'rgba(2, 132, 199, 1)' }, // Sky Blue
+  { background: 'rgba(251, 146, 60, 0.8)', border: 'rgba(234, 88, 12, 1)' }, // Vibrant Orange
+  { background: 'rgba(168, 85, 247, 0.8)', border: 'rgba(147, 51, 234, 1)' }, // Vivid Purple
+  { background: 'rgba(34, 197, 94, 0.8)', border: 'rgba(22, 163, 74, 1)' }, // Lime Green
+];
+
 const StandardInventoryView: React.FC = () => {
   const [data, setData] = useState<InventoryItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -25,6 +39,18 @@ const StandardInventoryView: React.FC = () => {
 
     getInventoryData();
   }, []);
+
+  // Dynamically generate color mapping based on actual categories in the data
+  const categoryColorMap = React.useMemo(() => {
+    const uniqueCategories = Array.from(new Set(data.map(item => item.Category)));
+    const colorMap: Record<string, { background: string; border: string }> = {};
+
+    uniqueCategories.forEach((category, index) => {
+      colorMap[category] = VIBRANT_COLORS[index % VIBRANT_COLORS.length];
+    });
+
+    return colorMap;
+  }, [data]);
 
   const totalInventoryValue = data.reduce(
     (acc, item) => acc + item.Stock_On_Hand * item.Cost_Per_Unit,
@@ -105,11 +131,11 @@ const StandardInventoryView: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-md">
-          <InventoryDistributionChart data={data} />
+          <InventoryDistributionChart data={data} categoryColors={categoryColorMap} />
         </div>
 
         <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-md">
-          <EfficiencyChart data={data} />
+          <EfficiencyChart data={data} categoryColors={categoryColorMap} />
         </div>
       </div>
     </div>

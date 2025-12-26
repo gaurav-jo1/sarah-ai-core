@@ -22,9 +22,10 @@ ChartJS.register(
 
 interface EfficiencyChartProps {
   data: InventoryItem[];
+  categoryColors: Record<string, { background: string; border: string }>;
 }
 
-export const EfficiencyChart: React.FC<EfficiencyChartProps> = ({ data }) => {
+export const EfficiencyChart: React.FC<EfficiencyChartProps> = ({ data, categoryColors }) => {
   // 1. Group by Category and Calculate Sell-Through Rate
   // Sell-Through Rate = (Units Sold / (Opening Stock + Stock Received)) * 100
 
@@ -44,24 +45,29 @@ export const EfficiencyChart: React.FC<EfficiencyChartProps> = ({ data }) => {
     return totalStock > 0 ? (sold / totalStock) * 100 : 0;
   });
 
+  // Map colors based on category names from props
+  const backgroundColors = labels.map(label => categoryColors[label]?.background || 'rgba(200, 200, 200, 0.7)');
+  const borderColors = labels.map(label => categoryColors[label]?.border || 'rgba(200, 200, 200, 1)');
+
   const chartData = {
     labels: labels,
     datasets: [
       {
         label: 'Sell-Through Rate (%)',
         data: efficiencyRates,
-        backgroundColor: 'rgba(99, 102, 241, 0.6)', // Indigo-500 equivalent
-        borderColor: 'rgba(99, 102, 241, 1)',
+        backgroundColor: backgroundColors,
+        borderColor: borderColors,
         borderWidth: 1,
       },
     ],
   };
 
   const options = {
-    indexAxis: 'y' as const,
+    indexAxis: 'x' as const,
+    maintainAspectRatio: false,
     responsive: true,
     scales: {
-        x: {
+        y: {
             beginAtZero: true,
             max: 100, // Percentage
             title: {
@@ -69,7 +75,7 @@ export const EfficiencyChart: React.FC<EfficiencyChartProps> = ({ data }) => {
                 text: 'Sell-Through Rate (%)'
             }
         },
-        y: {
+        x: {
             title: {
                 display: true,
                 text: 'Category'
