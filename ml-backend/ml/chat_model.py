@@ -1,4 +1,5 @@
 from langchain_google_genai import ChatGoogleGenerativeAI
+
 # from langchain_groq import ChatGroq
 from langchain_community.utilities import SQLDatabase
 from langchain_community.agent_toolkits import SQLDatabaseToolkit
@@ -11,7 +12,7 @@ class ChatModel:
         self.llm = ChatGoogleGenerativeAI(
             model="gemini-3-flash-preview",
             api_key=api_settings.GEMINI_API_KEY,
-            temperature=0.1,
+            temperature=0.7,
         )
         self.db = SQLDatabase.from_uri(api_settings.DATABASE_URL)
         self.toolkit = SQLDatabaseToolkit(db=self.db, llm=self.llm)
@@ -48,13 +49,32 @@ class ChatModel:
 
         return system_prompt
 
+    def _inventory_prompt(self, inventory):
+        prompt = f"""
+            Act as a Supply Chain Strategist. Analyze the provided inventory data and provide a response strictly following the structure of the example below. Use the specific headers and bullet points as shown.
+
+            ### Example Format Reference:
+            1. **Stockout Risk Timeline**
+            [Summary of depletion dates].
+
+            2. **Financial Projections (Time Period)**
+            If you maintain stock to meet the full forecasted demand, your business could achieve the following:
+            * Total Projected Revenue: [Calculated Value]
+            * Total Projected Profit: [Calculated Value]
+            * Top Profit Contributor: [Item Name] is your most valuable item, projected to generate [Value] in profit over the next three months.
+
+            3. **Required Replenishment**
+            To avoid stockouts and capture the full revenue potential, you need to order at least the following quantities immediately:
+            * [Item]: [Quantity] units
+
+            ---
+            **Current Inventory Data to Analyze:**
+            {inventory}
+        """
+
+        return prompt
+
     def chat(self, question: str):
-
-        print(f"Dialect: {self.db.dialect}")
-        print(f"Available tables: {self.db.get_usable_table_names()}")
-        print(f"Question user asked: {question}")
-        # print(f'Sample output: {self.db.run("SELECT * FROM Artist LIMIT 5;")}')
-
         agent = create_agent(self.llm, self.tools, system_prompt=self.system_message)
 
         result = agent.invoke(
@@ -66,3 +86,8 @@ class ChatModel:
         if isinstance(last_message.content, list):
             return last_message.content[0].get("text", str(last_message.content[0]))
         return last_message.content
+
+    def inventory_insight(self, inventory):
+        prompt = self._inventory_prompt(inventory)
+        ai_msg = self.llm.invoke(prompt)
+        return ai_msg.content[0]["text"]

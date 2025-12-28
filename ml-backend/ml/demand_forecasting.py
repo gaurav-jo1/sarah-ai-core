@@ -36,6 +36,27 @@ class ChronosForecaster:
 
         return pred.to_dict(orient="records")
 
+    async def predict_units_raw(self, df: DataFrame, prediction_length: int = 2):
+        df = pd.DataFrame(df)
+
+        df = df[["product_id", "period", "units_sold"]]
+
+        pred = self.model.predict_df(
+            df,
+            prediction_length=prediction_length,
+            quantile_levels=[0.1, 0.5, 0.9],
+            id_column="product_id",
+            timestamp_column="period",
+            target="units_sold",
+        )
+
+        pred["predictions"] = round(pred["predictions"])
+        pred["0.1"] = round(pred["0.1"])
+        pred["0.5"] = round(pred["0.5"])
+        pred["0.9"] = round(pred["0.9"])
+
+        return pred.to_dict(orient="records")
+
     async def predict_revenue(self, df: DataFrame, prediction_length: int = 2):
         df = pd.DataFrame(df)
 
