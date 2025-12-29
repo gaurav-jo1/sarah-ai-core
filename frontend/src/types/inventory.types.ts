@@ -17,3 +17,26 @@ export const InventoryItemSchema = z.object({
 });
 
 export type InventoryItem = z.infer<typeof InventoryItemSchema>;
+
+export interface AiInsightsInventoryItem {
+    product_id: string;
+    product_name: string;
+    period: string;
+    opening_stock: number;
+    stock_received: number;
+    units_sold: number;
+    stock_on_hand: number;
+    current_price: number;
+    cost_per_unit: number;
+    prediction_3m: number;
+    predicted_stockout_month: string;
+    margin_per_unit: number;
+    total_projected_profit_3m: number;
+    total_projected_revenue_3m: number;
+    replenishment_needed: number;
+}
+
+export interface AiInsightsResponse {
+    inventory: AiInsightsInventoryItem[];
+    summary: string;
+}

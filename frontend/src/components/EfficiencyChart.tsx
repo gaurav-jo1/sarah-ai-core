@@ -26,7 +26,6 @@ interface EfficiencyChartProps {
 }
 
 export const EfficiencyChart: React.FC<EfficiencyChartProps> = ({ data, categoryColors }) => {
-  // 1. Group by Category and Calculate Sell-Through Rate
   // Sell-Through Rate = (Units Sold / (Opening Stock + Stock Received)) * 100
 
   const categoryStats: Record<string, { sold: number; totalStock: number }> = {};
@@ -45,7 +44,6 @@ export const EfficiencyChart: React.FC<EfficiencyChartProps> = ({ data, category
     return totalStock > 0 ? (sold / totalStock) * 100 : 0;
   });
 
-  // Map colors based on category names from props
   const backgroundColors = labels.map(label => categoryColors[label]?.background || 'rgba(200, 200, 200, 0.7)');
   const borderColors = labels.map(label => categoryColors[label]?.border || 'rgba(200, 200, 200, 1)');
 
@@ -84,10 +82,10 @@ export const EfficiencyChart: React.FC<EfficiencyChartProps> = ({ data, category
     },
     plugins: {
       legend: {
-        position: 'top' as const,
+        display: false,
       },
       title: {
-        display: true,
+        display: false,
         text: 'Stock Efficiency by Category',
       },
     },
