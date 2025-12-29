@@ -3,7 +3,7 @@ import { Sparkles } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import { EfficiencyChart } from "./EfficiencyChart";
 import { DollarSign, Activity, AlertTriangle } from "lucide-react";
-import type { InventoryItem } from "../types/inventory.types";
+import type { InventoryItem } from "../../types/inventory.types";
 import { InventoryDistributionChart } from "./InventoryDistributionChart";
 
 // Vibrant color palette for categories

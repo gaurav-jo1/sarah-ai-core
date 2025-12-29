@@ -13,8 +13,8 @@ import {
   metricsResponseSchema,
   type metricsResponse,
 } from "../types/product.types";
-import { TopProductsChart } from "../components/TopProductsChart";
-import { RevenueChart } from "../components/RevenueChart";
+import { TopProductsChart } from "../components/dashboard/TopProductsChart";
+import { RevenueChart } from "../components/dashboard/RevenueChart";
 
 const HomePage: React.FC = () => {
   const [dataExists, setDataExists] = useState<boolean | null>(null);

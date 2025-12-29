@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Send } from "lucide-react";
 import ReactMarkdown from "react-markdown";
@@ -15,11 +15,11 @@ const ChatPage: React.FC = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     scrollToBottom();
   }, [messages, loading]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchHistory = async () => {
       try {
         const storedSessionId = localStorage.getItem("session_id");

@@ -1,6 +1,6 @@
 import React from "react";
 import { Routes, Route } from "react-router";
-import Sidebar from "./components/Sidebar";
+import Sidebar from "./components/layout/Sidebar";
 
 import HomePage from "./pages/HomePage";
 import ChatPage from "./pages/ChatPage";

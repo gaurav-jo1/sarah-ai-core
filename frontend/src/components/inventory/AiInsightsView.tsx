@@ -14,7 +14,7 @@ import {
 import type { ChartOptions } from "chart.js";
 import { Bar } from "react-chartjs-2";
 import axios from "axios";
-import type { AiInsightsResponse } from "../types/inventory.types";
+import type { AiInsightsResponse } from "../../types/inventory.types";
 
 interface RestockItem {
   id: string;

@@ -26,7 +26,7 @@ ChartJS.register(
   Filler
 );
 
-import type { RevenueResponse } from "../types/revenue.types";
+import type { RevenueResponse } from "../../types/revenue.types";
 
 const RevenueForecast: React.FC = () => {
   const [selectedProduct, setSelectedProduct] = useState<string>("All");

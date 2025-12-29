@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Sparkles } from "lucide-react";
-import StandardInventoryView from "../components/StandardInventoryView";
-import { AiInsightsView } from "../components/AiInsightsView";
+import StandardInventoryView from "../components/inventory/StandardInventoryView";
+import { AiInsightsView } from "../components/inventory/AiInsightsView";
 
 const InventoryPage: React.FC = () => {
   const [viewMode, setViewMode] = useState<"standard" | "ai">("standard");

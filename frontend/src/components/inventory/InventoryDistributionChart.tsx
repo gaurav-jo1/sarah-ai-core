@@ -7,7 +7,7 @@ import {
   Legend,
 } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import type { InventoryItem } from '../types/inventory.types';
+import type { InventoryItem } from '../../types/inventory.types';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 

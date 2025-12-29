@@ -26,7 +26,7 @@ ChartJS.register(
   Filler
 );
 
-import type { UnitsResponse } from "../types/units.types";
+import type { UnitsResponse } from "../../types/units.types";
 
 const UnitsForecast: React.FC = () => {
   const [selectedProduct, setSelectedProduct] = useState<string>("All");

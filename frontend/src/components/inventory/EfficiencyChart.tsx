@@ -9,7 +9,7 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
-import type { InventoryItem } from '../types/inventory.types';
+import type { InventoryItem } from '../../types/inventory.types';
 
 ChartJS.register(
   CategoryScale,

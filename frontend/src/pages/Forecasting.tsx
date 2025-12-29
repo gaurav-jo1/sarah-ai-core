@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import UnitsForecast from "../components/UnitsForecast";
-import RevenueForecast from "../components/RevenueForecast";
+import UnitsForecast from "../components/forecasting/UnitsForecast";
+import RevenueForecast from "../components/forecasting/RevenueForecast";
 
 const Forecasting: React.FC = () => {
   const [metric, setMetric] = useState<"Units" | "Revenue">("Units");
