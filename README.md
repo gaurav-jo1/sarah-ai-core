@@ -39,19 +39,30 @@ Talk to your supply chain.
 - **Powered by Gemini**: Uses Google's Gemini API with RAG (Retrieval-Augmented Generation) on your database.
 - **Persistent History**: Chat history is stored in Redis, allowing you to pick up where you left off.
 
-### 3. 📈 Advanced Forecasting
+### 3. 📈 Advanced Forecasting (ForecastingPage)
 Predict the future with state-of-the-art AI.
 - **Amazon Chronos 2**: Utilizes the latest Chronos foundational models for high-accuracy time-series forecasting.
 - **Dual-Mode**: Toggle between **Revenue Forecasting** and **Unit Sales Forecasting**.
 - **Next Month Predictions**: Get immediate insight into upcoming periods.
 
-### 4. 📦 Autonomous Inventory (In Development 🚧)
-Self-driving inventory management.
-- **AI Replenishment**: Calculates reorder points, safety stock, and optimal order quantities automatically.
-- **Anomaly Detection**: Detects demand spikes (z-score analysis) to prevent stockouts.
-- **Actionable Suggestions**: Human-in-the-loop workflow for approving AI-generated urgency scores and suggestions.
+### 4. 📦 Autonomous Inventory (InventoryPage)
 
-### 5. 🔌 Data Connect
+Predictive engine for proactive stock management and automated replenishment.
+
+**Dashboard & Analytics**
+
+* **Standard View**: Real-time tracking of **Stock Value**, **Sell-Through Rate**, and **Low Stock Alerts** via donut and bar charts.
+* **AI Insight View**: Forecasting models that visualize the gap between **Stock on Hand** and **Replenishment Need** using stacked bar charts.
+
+**AI Summary & Execution**
+
+1. **Stockout Risk Timeline**: Predicted dates for zero-stock events.
+2. **Financial Projections**: Capital requirements for upcoming cycles.
+3. **Required Replenishment**: Precise unit counts needed for optimal safety stock.
+
+* **Restock Table**: Review the final order list and click **"Execute AI Restock Plan"** to automate procurement.
+
+### 5. 🔌 Data Connect (DataConnectPage)
 Seamless integration with your data.
 - **File Upload**: Drag-and-drop CSV or Excel files to instantly populate the system.
 - **Planned Integrations**:
