@@ -101,6 +101,8 @@ export const AiInsightsView: React.FC = () => {
       let url = "http://127.0.0.1:8000/inventory/insight";
       const response = await axios.get<AiInsightsResponse>(url);
 
+      console.log(response)
+
       setData(response.data);
     } catch (error) {
       console.error("Failed to fetch forecast data", error);
@@ -298,9 +300,22 @@ export const AiInsightsView: React.FC = () => {
           </h3>
         </div>
 
-        <div className="prose prose-indigo max-w-none text-gray-600">
-          <ReactMarkdown>{data?.summary || ""}</ReactMarkdown>
-        </div>
+      <div className="">
+        <ReactMarkdown
+          components={{
+            h1: ({ node, ...props }) => <h1 className="text-3xl font-bold text-gray-800 mb-6" {...props} />,
+            h2: ({ node, ...props }) => <h2 className="text-2xl font-bold text-gray-800 mb-4 mt-6" {...props} />,
+            h3: ({ node, ...props }) => <h3 className="text-xl font-bold text-gray-800 mb-3 mt-5" {...props} />,
+            p: ({ node, ...props }) => <p className="text-gray-700 text-lg mb-4 leading-relaxed" {...props} />,
+            ul: ({ node, ...props }) => <ul className="list-disc list-inside space-y-2 mb-4 text-gray-700 text-lg ml-2" {...props} />,
+            ol: ({ node, ...props }) => <ol className="list-decimal list-inside space-y-2 mb-4 text-gray-700 text-lg ml-2" {...props} />,
+            li: ({ node, ...props }) => <li className="pl-1" {...props} />,
+            strong: ({ node, ...props }) => <strong className="font-semibold text-gray-900" {...props} />,
+          }}
+        >
+          {data?.summary || ""}
+        </ReactMarkdown>
+      </div>
       </motion.section>
 
       {!showRestockPlan && !orderPlaced && (
