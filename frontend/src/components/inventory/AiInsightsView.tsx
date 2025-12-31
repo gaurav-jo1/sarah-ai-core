@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Sparkles, RefreshCw, Trash2, CheckCircle2, ArrowRight } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import {
   Chart as ChartJS,
@@ -39,6 +40,7 @@ export const AiInsightsView: React.FC = () => {
   const [showRestockPlan, setShowRestockPlan] = useState(false);
   const [restockItems, setRestockItems] = useState<RestockItem[]>([]);
   const [orderPlaced, setOrderPlaced] = useState(false);
+  const restockPlanRef = useRef<HTMLElement>(null);
 
   const loadingMessages = [
     "Analyzing historical sales data...",
@@ -70,8 +72,8 @@ export const AiInsightsView: React.FC = () => {
       setShowRestockPlan(true);
       // Scroll to bottom after state update
       setTimeout(() => {
-        window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
-      }, 100);
+        restockPlanRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 300);
     }
   };
 
@@ -230,8 +232,18 @@ export const AiInsightsView: React.FC = () => {
   }
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
-      <div className="bg-linear-to-r from-indigo-600 to-purple-600 rounded-3xl p-8 text-white shadow-xl relative overflow-hidden">
+    <motion.div
+      className="space-y-8"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <motion.div
+        className="bg-linear-to-r from-indigo-600 to-purple-600 rounded-3xl p-8 text-white shadow-xl relative overflow-hidden"
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.1, type: "spring", stiffness: 100 }}
+      >
         <div className="absolute top-0 right-0 p-8 opacity-20">
           <Sparkles className="w-48 h-48 text-white transform rotate-12" />
         </div>
@@ -242,10 +254,15 @@ export const AiInsightsView: React.FC = () => {
             actionable insights and automated management strategies.
           </p>
         </div>
-      </div>
+      </motion.div>
 
       {/* AI Insights Chart */}
-      <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+      <motion.section
+        className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+      >
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
             <span className="w-2 h-8 bg-indigo-500 rounded-full"></span>
@@ -263,10 +280,15 @@ export const AiInsightsView: React.FC = () => {
         <div className="h-80 w-full">
           <Bar options={chartOptions} data={chartData} />
         </div>
-      </section>
+      </motion.section>
 
       {/* AI Summary */}
-      <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+      <motion.section
+        className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+      >
         <div className="flex items-center gap-3 mb-6">
           <div className="p-3 bg-purple-100 rounded-xl text-purple-600">
             <Sparkles className="w-6 h-6" />
@@ -279,88 +301,112 @@ export const AiInsightsView: React.FC = () => {
         <div className="prose prose-indigo max-w-none text-gray-600">
           <ReactMarkdown>{data?.summary || ""}</ReactMarkdown>
         </div>
-      </section>
+      </motion.section>
 
       {!showRestockPlan && !orderPlaced && (
         <section className="flex justify-end">
-          <button
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={handleGeneratePlan}
             className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-medium shadow-md shadow-indigo-200 transition-all flex items-center gap-2 cursor-pointer"
           >
             <Sparkles className="w-4 h-4" />
             Generate AI Restock Plan
-          </button>
+          </motion.button>
         </section>
       )}
 
-      {showRestockPlan && !orderPlaced && (
-        <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 animate-in slide-in-from-bottom-4 duration-500">
-          <h3 className="text-xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
-            <RefreshCw className="w-5 h-5 text-indigo-500" />
-            Review Restock Plan
-          </h3>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="border-b border-gray-100 text-sm font-medium text-gray-500">
-                  <th className="py-3 px-4">Product Name</th>
-                  <th className="py-3 px-4">Current Stock</th>
-                  <th className="py-3 px-4">Forecasted Demand (3M)</th>
-                  <th className="py-3 px-4 text-center">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="text-gray-700">
-                {restockItems.map((item) => (
-                  <tr
-                    key={item.id}
-                    className="border-b border-gray-50 hover:bg-gray-50 transition-colors"
-                  >
-                    <td className="py-3 px-4 font-medium">{item.productName}</td>
-                    <td className="py-3 px-4">
-                      <span className="bg-slate-100 text-slate-700 px-2 py-1 rounded">
-                        {item.currentStock} units
-                      </span>
-                    </td>
-                    <td className="py-3 px-4">
-                      <input
-                        type="number"
-                        min="0"
-                        value={item.forecastedDemand}
-                        onChange={(e) =>
-                          handleUpdateForecast(item.id, parseInt(e.target.value) || 0)
-                        }
-                        className="w-24 p-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all"
-                      />
-                    </td>
-                    <td className="py-3 px-4 text-center">
-                      <button
-                        onClick={() => handleDeleteItem(item.id)}
-                        className="text-gray-400 hover:text-red-500 p-2 rounded-full hover:bg-red-50 transition-all"
-                        title="Remove Item"
-                      >
-                        <Trash2 className="w-5 h-5 cursor-pointer" />
-                      </button>
-                    </td>
+      <AnimatePresence>
+        {showRestockPlan && !orderPlaced && (
+          <motion.section
+            ref={restockPlanRef}
+            className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            <h3 className="text-xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
+              <RefreshCw className="w-5 h-5 text-indigo-500" />
+              Review Restock Plan
+            </h3>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="border-b border-gray-100 text-sm font-medium text-gray-500">
+                    <th className="py-3 px-4">Product Name</th>
+                    <th className="py-3 px-4">Current Stock</th>
+                    <th className="py-3 px-4">Forecasted Demand (3M)</th>
+                    <th className="py-3 px-4 text-center">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="text-gray-700">
+                  <AnimatePresence>
+                    {restockItems.map((item) => (
+                      <motion.tr
+                        key={item.id}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 20 }}
+                        layout
+                        className="border-b border-gray-50 hover:bg-gray-50 transition-colors"
+                      >
+                        <td className="py-3 px-4 font-medium">{item.productName}</td>
+                        <td className="py-3 px-4">
+                          <span className="bg-slate-100 text-slate-700 px-2 py-1 rounded">
+                            {item.currentStock} units
+                          </span>
+                        </td>
+                        <td className="py-3 px-4">
+                          <input
+                            type="number"
+                            min="0"
+                            value={item.forecastedDemand}
+                            onChange={(e) =>
+                              handleUpdateForecast(item.id, parseInt(e.target.value) || 0)
+                            }
+                            className="w-24 p-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all"
+                          />
+                        </td>
+                        <td className="py-3 px-4 text-center">
+                          <button
+                            onClick={() => handleDeleteItem(item.id)}
+                            className="text-gray-400 hover:text-red-500 p-2 rounded-full hover:bg-red-50 transition-all"
+                            title="Remove Item"
+                          >
+                            <Trash2 className="w-5 h-5 cursor-pointer" />
+                          </button>
+                        </td>
+                      </motion.tr>
+                    ))}
+                  </AnimatePresence>
+                </tbody>
+              </table>
+            </div>
 
-          <div className="mt-8 flex justify-end">
-            <button
-              onClick={handleExecutePlan}
-              className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-xl font-medium shadow-md shadow-green-200 transition-all flex items-center gap-2 cursor-pointer transform hover:scale-[1.02]"
-            >
-              Execute AI Restock Plan
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </div>
-        </section>
-      )}
+            <div className="mt-8 flex justify-end">
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={handleExecutePlan}
+                className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-xl font-medium shadow-md shadow-green-200 transition-all flex items-center gap-2 cursor-pointer"
+              >
+                Execute AI Restock Plan
+                <ArrowRight className="w-4 h-4" />
+              </motion.button>
+            </div>
+          </motion.section>
+        )}
+      </AnimatePresence>
 
       {orderPlaced && (
-        <section className="bg-green-50 rounded-2xl border border-green-100 p-12 text-center animate-in zoom-in-95 duration-500">
+        <motion.section
+          className="bg-green-50 rounded-2xl border border-green-100 p-12 text-center"
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 200, damping: 20 }}
+        >
           <div className="flex flex-col items-center justify-center space-y-4">
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-2">
               <CheckCircle2 className="w-8 h-8 text-green-600" />
@@ -382,8 +428,8 @@ export const AiInsightsView: React.FC = () => {
               Start New Plan
             </button>
           </div>
-        </section>
+        </motion.section>
       )}
-    </div>
+    </motion.div>
   );
 };

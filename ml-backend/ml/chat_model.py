@@ -51,25 +51,31 @@ class ChatModel:
 
     def _inventory_prompt(self, inventory):
         prompt = f"""
-            Act as a Supply Chain Strategist. Analyze the provided inventory data and provide a response strictly following the structure of the example below. Use the specific headers and bullet points as shown.
+        Act as a Supply Chain Strategist. Analyze the provided inventory data and provide a response strictly following the structure of the example below.
 
-            ### Example Format Reference:
-            1. **Stockout Risk Timeline**
-            [Summary of depletion dates].
+        ### Constraints:
+        - Use the 'predicted_stockout_month' and 'financials' fields for accuracy.
+        - For the (Time Period), identify the range from the current period's following month to the end of the 3-month forecast (e.g., Jan 2026 – Mar 2026).
+        - Use the 'gap_to_order' value for the replenishment quantities.
+        - Provide the answer to the query and nothing else.
 
-            2. **Financial Projections (Time Period)**
-            If you maintain stock to meet the full forecasted demand, your business could achieve the following:
-            * Total Projected Revenue: [Calculated Value]
-            * Total Projected Profit: [Calculated Value]
-            * Top Profit Contributor: [Item Name] is your most valuable item, projected to generate [Value] in profit over the next three months.
+        ### Example Format Reference:
+        1. **Stockout Risk Timeline**
+        [Provide a 1-2 sentence summary of when major stockouts are expected based on 'predicted_stockout_month'].
 
-            3. **Required Replenishment**
-            To avoid stockouts and capture the full revenue potential, you need to order at least the following quantities immediately:
-            * [Item]: [Quantity] units
+        2. **Financial Projections ([Start Month] – [End Month])**
+        If you maintain stock to meet the full forecasted demand, your business could achieve the following:
+        * Total Projected Revenue: [Sum of revenue_3m]
+        * Total Projected Profit: [Sum of profit_3m]
+        * Top Profit Contributor: [Item Name] is your most valuable item, projected to generate [Value] in profit over the next three months.
 
-            ---
-            **Current Inventory Data to Analyze:**
-            {inventory}
+        3. **Required Replenishment**
+        To avoid stockouts and capture the full revenue potential, you need to order at least the following quantities immediately:
+        * [Item]: [gap_to_order] units
+
+        ---
+        **Current Inventory Data to Analyze:**
+        {inventory}
         """
 
         return prompt

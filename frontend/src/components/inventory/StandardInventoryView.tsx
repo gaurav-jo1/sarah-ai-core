@@ -5,6 +5,7 @@ import { EfficiencyChart } from "./EfficiencyChart";
 import { DollarSign, Activity, AlertTriangle } from "lucide-react";
 import type { InventoryItem } from "../../types/inventory.types";
 import { InventoryDistributionChart } from "./InventoryDistributionChart";
+import { motion } from "framer-motion";
 
 // Vibrant color palette for categories
 const VIBRANT_COLORS = [
@@ -19,6 +20,29 @@ const VIBRANT_COLORS = [
   { background: 'rgba(168, 85, 247, 0.8)', border: 'rgba(147, 51, 234, 1)' }, // Vivid Purple
   { background: 'rgba(34, 197, 94, 0.8)', border: 'rgba(22, 163, 74, 1)' }, // Lime Green
 ];
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring" as const,
+      stiffness: 100,
+      damping: 15
+    }
+  }
+};
 
 const StandardInventoryView: React.FC = () => {
   const [data, setData] = useState<InventoryItem[]>([]);
@@ -82,9 +106,17 @@ const StandardInventoryView: React.FC = () => {
   }
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <motion.div
+      className="space-y-8"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-md hover:shadow-lg transition-shadow">
+        <motion.div
+          className="bg-white p-6 rounded-2xl border border-gray-100 shadow-md hover:shadow-lg transition-shadow"
+          variants={itemVariants}
+        >
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-gray-500 font-medium">Total Inventory Value</h3>
             <div className="p-2 bg-green-100 rounded-lg text-green-600">
@@ -100,9 +132,12 @@ const StandardInventoryView: React.FC = () => {
           <p className="text-sm text-gray-400 mt-1">
             Cost value of stock on hand
           </p>
-        </div>
+        </motion.div>
 
-        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-md hover:shadow-lg transition-shadow">
+        <motion.div
+          className="bg-white p-6 rounded-2xl border border-gray-100 shadow-md hover:shadow-lg transition-shadow"
+          variants={itemVariants}
+        >
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-gray-500 font-medium">Sell-Through Rate</h3>
             <div className="p-2 bg-blue-100 rounded-lg text-blue-600">
@@ -115,9 +150,12 @@ const StandardInventoryView: React.FC = () => {
           <p className="text-sm text-gray-400 mt-1">
             Efficiency of stock turnover
           </p>
-        </div>
+        </motion.div>
 
-        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-md hover:shadow-lg transition-shadow">
+        <motion.div
+          className="bg-white p-6 rounded-2xl border border-gray-100 shadow-md hover:shadow-lg transition-shadow"
+          variants={itemVariants}
+        >
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-gray-500 font-medium">Low Stock Alerts</h3>
             <div className="p-2 bg-red-100 rounded-lg text-red-600">
@@ -126,19 +164,25 @@ const StandardInventoryView: React.FC = () => {
           </div>
           <p className="text-3xl font-bold text-gray-900">{lowStockCount}</p>
           <p className="text-sm text-gray-400 mt-1">Products below 20% stock</p>
-        </div>
+        </motion.div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-md">
+        <motion.div
+          className="bg-white p-6 rounded-2xl border border-gray-100 shadow-md"
+          variants={itemVariants}
+        >
           <InventoryDistributionChart data={data} categoryColors={categoryColorMap} />
-        </div>
+        </motion.div>
 
-        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-md">
+        <motion.div
+          className="bg-white p-6 rounded-2xl border border-gray-100 shadow-md"
+          variants={itemVariants}
+        >
           <EfficiencyChart data={data} categoryColors={categoryColorMap} />
-        </div>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
