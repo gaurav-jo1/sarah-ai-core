@@ -1,21 +1,20 @@
 from langchain_google_genai import ChatGoogleGenerativeAI
-
-# from langchain_groq import ChatGroq
 from langchain_community.utilities import SQLDatabase
 from langchain_community.agent_toolkits import SQLDatabaseToolkit
 from langchain.agents import create_agent
 from settings.settings import api_settings
+from datetime import datetime
 
 
 class ChatModel:
     def __init__(self):
-        self.llm = ChatGoogleGenerativeAI(
+        self.llm_1 = ChatGoogleGenerativeAI(
             model="gemini-3-flash-preview",
             api_key=api_settings.GEMINI_API_KEY,
             temperature=0.7,
         )
         self.db = SQLDatabase.from_uri(api_settings.DATABASE_URL)
-        self.toolkit = SQLDatabaseToolkit(db=self.db, llm=self.llm)
+        self.toolkit = SQLDatabaseToolkit(db=self.db, llm=self.llm_1)
         self.tools = self.toolkit.get_tools()
 
         self.system_message = self._generate_prompt()
@@ -81,7 +80,7 @@ class ChatModel:
         return prompt
 
     def chat(self, question: str):
-        agent = create_agent(self.llm, self.tools, system_prompt=self.system_message)
+        agent = create_agent(self.llm_1, self.tools, system_prompt=self.system_message)
 
         result = agent.invoke(
             {"messages": [{"role": "user", "content": question}]},
@@ -95,5 +94,43 @@ class ChatModel:
 
     def inventory_insight(self, inventory):
         prompt = self._inventory_prompt(inventory)
-        ai_msg = self.llm.invoke(prompt)
+        ai_msg = self.llm_1.invoke(prompt)
         return ai_msg.content[0]["text"]
+
+    def chat_test(self, question: str):
+        dt = datetime.now()
+        formatted_date = dt.strftime("%B %Y")
+
+        prompt = f"""
+            Your task is to classify the user's intent into one of three specific categories.
+
+            **Current Reference Date:** {formatted_date}
+            Use this date as the "present" to determine if a request refers to the past or the future.
+
+            **Categories:**
+            1. "normal": General questions, greetings, or conversation. No database lookup needed.
+            2. "analysis": Retrieving or analyzing data from the past up to the present ({formatted_date}).
+            *Keywords: "What happened", "Current status", "Last month", "Previous year".*
+            3. "forecasting": Predicting future trends or data points occurring after {formatted_date}.
+            *Keywords: "What will happen", "Prediction", "Next quarter", "Future outlook".*
+
+            Return your response strictly as a single JSON object with the key "request_type".
+
+            Example Output:
+            {{"request_type": "analysis"}}
+        """
+
+        agent = create_agent(self.llm_1, self.tools, system_prompt=prompt)
+
+        # for step in agent.stream(
+        #     {"messages": [{"role": "user", "content": question}]},
+        #     stream_mode="values",
+        # ):
+        #     step["messages"][-1].pretty_print()
+
+        result = agent.invoke(
+            {"messages": [{"role": "user", "content": question}]},
+            config={"recursion_limit": 50},
+        )
+
+        return result["messages"][-1].content
