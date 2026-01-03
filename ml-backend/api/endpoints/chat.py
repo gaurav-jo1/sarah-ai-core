@@ -1,4 +1,4 @@
-from ml.chat_model import ChatModel
+from ml.chat import ChatModel
 from schemas.chat_schema import ChatRequest
 from fastapi import APIRouter, status, HTTPException
 from redis_client.memory_manager import ChatMemoryManager
@@ -23,13 +23,13 @@ async def check_user(session_id: Optional[str] = None):
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def chat_model(request: ChatRequest):
-    memory = ChatMemoryManager()
+    # memory = ChatMemoryManager()
 
     try:
-        result = ChatModel().chat(question=request.message)
+        result = ChatModel().chat(user_input=request.message)
 
-        memory.add_message(request.session_id, role="user", content=request.message)
-        memory.add_message(request.session_id, role="ai", content=result)
+        # memory.add_message(request.session_id, role="user", content=request.message)
+        # memory.add_message(request.session_id, role="ai", content=result)
 
         return {"response": result}
 

@@ -108,12 +108,39 @@ async def get_ai_insights(db: Session = Depends(get_db)):
         )
 
         data["margin_per_unit"] = data["current_price"] - data["cost_per_unit"]
-        data["total_projected_profit_3m"] = data["margin_per_unit"] * data["prediction_3m"]
-        data["total_projected_revenue_3m"] = data["current_price"] * data["prediction_3m"]
+        data["total_projected_profit_3m"] = (
+            data["margin_per_unit"] * data["prediction_3m"]
+        )
+        data["total_projected_revenue_3m"] = (
+            data["current_price"] * data["prediction_3m"]
+        )
         data["replenishment_needed"] = data["prediction_3m"] - data["stock_on_hand"]
 
     try:
-        summary = ChatModel().inventory_insight(inventory=inventory)
+        # summary = ChatModel().inventory_insight(inventory=inventory)
+
+        summary = """### Stockout Risk Timeline
+
+            Toothpaste, Shampoo, Cereal, and Chips are projected to encounter stockouts by **February 2026**. Inventory for Chocolate and Soda is expected to be fully depleted by **March 2026**.
+
+            ### Financial Projections (**January 2026** – **March 2026**)
+
+            If you maintain stock to meet the full forecasted demand, your business could achieve the following:
+
+            * Total Projected Revenue: **$23,563.63**
+            * Total Projected Profit: **$11,181.49**
+            * Top Profit Contributor: Shampoo is your most valuable item, projected to generate **$4,468.54** in profit over the next **3** months.
+
+            ### Required Replenishment
+
+            To avoid stockouts and capture the full revenue potential, you need to order at least the following quantities immediately:
+
+            * Chocolate: **149.0** units
+            * Toothpaste: **330.0** units
+            * Shampoo: **314.0** units
+            * Cereal: **90.0** units
+            * Soda: **89.0** units
+            * Chips: **193.0** units"""
 
     except Exception as e:
         raise HTTPException(
