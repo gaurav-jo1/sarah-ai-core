@@ -113,20 +113,27 @@ const ChatPage: React.FC = () => {
       {/* Header / Brand - Transitions from Center to Top */}
       <div
         className={`absolute w-full flex justify-center transition-all duration-700 ease-in-out z-10 ${
-          hasStarted ? "top-4 scale-75" : "top-[40%] -translate-y-1/2 scale-100"
+          hasStarted
+            ? "top-0 py-4 bg-white/80 backdrop-blur-md shadow-xs border-b border-slate-100/50"
+            : "top-[40%] -translate-y-1/2"
         }`}
       >
-        <h1 className="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500 drop-shadow-sm tracking-tight">
+        <h1
+          className={`text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500 drop-shadow-sm tracking-tight transition-transform duration-700 ease-in-out ${
+            hasStarted ? "scale-75 origin-center" : "scale-100"
+          }`}
+        >
           Sarah AI
         </h1>
       </div>
 
       {/* Messages Area - Only visible when started */}
       <div
-        className={`flex-1 overflow-y-auto w-full max-w-4xl mx-auto px-4 pt-24 pb-32 transition-opacity duration-500 ${
+        className={`flex-1 overflow-y-auto w-full transition-opacity duration-500 ${
           hasStarted ? "opacity-100" : "opacity-0"
         }`}
       >
+        <div className="w-full max-w-4xl mx-auto px-4 pt-24 pb-32">
         {messages.map((msg) => (
           <div
             key={msg.id}
@@ -182,7 +189,8 @@ const ChatPage: React.FC = () => {
             </div>
           </div>
         )}
-        <div ref={messagesEndRef} />
+          <div ref={messagesEndRef} />
+        </div>
       </div>
 
       {/* Input Area - Transitions from Center to Bottom */}
