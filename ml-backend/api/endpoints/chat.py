@@ -1,9 +1,10 @@
-from ml.chat_model import ChatModel
-from schemas.chat_schema import ChatRequest
-from fastapi import APIRouter, status, HTTPException
-from redis_client.memory_manager import ChatMemoryManager
 import uuid
 from typing import Optional
+from fastapi import APIRouter, status, HTTPException
+
+from ml.chat_model import ChatModel
+from schemas.chat_schema import ChatRequest
+from redis_client.memory_manager import ChatMemoryManager
 
 router = APIRouter()
 

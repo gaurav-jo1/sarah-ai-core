@@ -1,10 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from db.database import SessionLocal
-from crud.inventory import get_latest_products
+from crud.inventory import (
+    get_latest_products,
+    get_product_data_as_df,
+    get_inventory_list,
+)
 from ml.demand_forecasting import ChronosForecaster
-from db.product import Product
-import pandas as pd
 from collections import defaultdict
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
@@ -56,33 +58,9 @@ def get_inventory(db: Session = Depends(get_db)):
 async def get_ai_insights(db: Session = Depends(get_db)):
     current_inventory = get_latest_products(db)
 
-    inventory = [
-        {
-            "product_id": row.Product_ID,
-            "product_name": row.Product_Name,
-            "period": row.Period,
-            "opening_stock": row.Opening_Stock,
-            "stock_received": row.Stock_Received,
-            "units_sold": row.Units_Sold,
-            "stock_on_hand": row.Stock_On_Hand,
-            "current_price": row.Current_Price,
-            "cost_per_unit": row.Cost_Per_Unit,
-        }
-        for row in current_inventory
-    ]
+    inventory = get_inventory_list(current_inventory)
 
-    all_data = db.query(Product).all()
-
-    df = pd.DataFrame(
-        [
-            {
-                "product_id": row.Product_ID,
-                "period": row.Period,
-                "units_sold": row.Units_Sold,
-            }
-            for row in all_data
-        ]
-    )
+    df = get_product_data_as_df(db)
 
     try:
         forecast = await ChronosForecaster().predict_units_raw(
