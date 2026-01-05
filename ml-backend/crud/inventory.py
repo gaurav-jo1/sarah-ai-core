@@ -2,14 +2,30 @@ from db.product import Product
 from sqlalchemy import select, func
 from sqlalchemy.orm import Session
 from pandas import DataFrame
+from db.database import SessionLocal
+from typing import Optional
+from contextlib import contextmanager
 
 
-def get_latest_products(session: Session):
-    latest_period = session.scalar(select(func.max(Product.Period)))
+@contextmanager
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
+def get_latest_products(db: Optional[Session] = None):
+    if db is None:
+        with get_db() as new_db:
+            return get_latest_products(db=new_db)
+
+    latest_period = db.scalar(select(func.max(Product.Period)))
     if not latest_period:
         return []
 
-    return session.scalars(select(Product).where(Product.Period == latest_period)).all()
+    return db.scalars(select(Product).where(Product.Period == latest_period)).all()
 
 
 def get_inventory_list(current_inventory):
@@ -29,7 +45,11 @@ def get_inventory_list(current_inventory):
     ]
 
 
-def get_product_data_as_df(db: Session) -> DataFrame:
+def get_product_data_as_df(db: Optional[Session] = None) -> DataFrame:
+    if db is None:
+        with get_db() as new_db:
+            return get_product_data_as_df(db=new_db)
+
     all_data = db.query(Product).all()
 
     return DataFrame(

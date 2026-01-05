@@ -9,6 +9,12 @@ from langgraph.graph import StateGraph, START, END
 from langchain.agents import create_agent
 from langchain_community.utilities import SQLDatabase
 from langchain_community.agent_toolkits import SQLDatabaseToolkit
+from crud.inventory import (
+    get_latest_products,
+    get_product_data_as_df,
+    get_inventory_list,
+)
+from ml.demand_forecasting import ChronosForecaster
 
 
 class MessageClassifier(BaseModel):
@@ -173,10 +179,56 @@ class ChatModel:
 
         return {"messages": [{"role": "assistant", "content": reply.content}]}
 
-    def forecasting_agent(self, state: State):
-        pass
+    async def forecasting_agent(self, state: State):
+        last_message = state["messages"][-1].content
+        current_inventory = get_latest_products()
+        inventory = get_inventory_list(current_inventory)
+        df = get_product_data_as_df()
+        forecast = await ChronosForecaster().predict_units_raw(
+            df=df, prediction_length=3
+        )
 
-    def chat(self, user_input: str):
+        messages = [
+            {
+                "role": "system",
+                "content": f"""
+                    ### Role
+                    You are a highly skilled Sales Data Analyst. Your task is to interpret pre-calculated forecasting data and provide clear, human-readable answers to user inquiries.
+
+                    ### Context
+                    - **Reference Date (Today):** {self.formatted_date}
+                    - **Data Scope:** The forecast starts from [Insert Month Name] and covers a 3-month horizon.
+                    - **Quantile Key:**
+                        - "0.5" (Predictions): The median expectation.
+                        - "0.1" (Lower Bound): Conservative estimate (90% probability of exceeding).
+                        - "0.9" (Upper Bound): Aggressive estimate (10% probability of exceeding).
+
+                    ### Data Tables
+                    **Current Inventory:**
+                    {inventory}
+
+                    **Forecasted Data:**
+                    {forecast}
+
+                    ### Response Guidelines
+                    1. **Date Grounding:** Before answering, mentally map "next month" to the specific month name based on {self.formatted_date}.
+                    2. **No Hallucinations:** Use only the provided numbers. If a specific product or month is missing from the data, state: "I do not have forecast data for that specific period/item."
+                    3. **Inventory Awareness:** If a forecast value is higher than current inventory, proactively mention that current stock may not meet demand.
+                    4. **Tone:** Professional, data-driven, and concise.
+
+                    ### Example Interaction
+                    User: "How does the forecast look for [Product]?"
+                    Assistant: "For [Current Month], the expected demand is [0.5 Value] units. Looking ahead to [Next Month], the forecast increases to [0.5 Value]. Your current inventory is [Value], which [is/is not] sufficient to cover the expected demand."
+                """,
+            },
+            {"role": "user", "content": last_message},
+        ]
+
+        reply = self.llm_1.invoke(messages)
+
+        return {"messages": [{"role": "assistant", "content": reply.content}]}
+
+    async def chat(self, user_input: str):
         graph_builder = StateGraph(State)
         graph_builder.add_node("classify_message", self.classify_message)
         graph_builder.add_node("router", self.router)
@@ -205,8 +257,14 @@ class ChatModel:
         state = {"messages": [], "message_type": None}
 
         state["messages"].append({"role": "user", "content": user_input})
-        state = graph.invoke(state)
+        state = await graph.ainvoke(state)
 
         llm_response = state["messages"][-1].content
 
-        return llm_response[0]["text"]
+        if (
+            isinstance(llm_response, list)
+            and len(llm_response) > 0
+            and isinstance(llm_response[0], dict)
+        ):
+            return llm_response[0]["text"]
+        return llm_response

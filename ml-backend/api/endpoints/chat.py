@@ -29,7 +29,7 @@ async def chat_model(request: ChatRequest):
     memory = ChatMemoryManager()
 
     try:
-        result = ChatModel().chat(user_input=request.message)
+        result = await ChatModel().chat(user_input=request.message)
 
         memory.add_message(request.session_id, role="user", content=request.message)
         memory.add_message(request.session_id, role="ai", content=result)
