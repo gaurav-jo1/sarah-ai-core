@@ -2,72 +2,43 @@
 
 **An autonomous supply-chain brain for consumer goods brands.**
 
-> *Inspired by the concept of an "AI-native operating system," Sarah AI Core is a working prototype designed to replace legacy ERPs with an intelligent, self-driving operating system.*
-
-[![React](https://img.shields.io/badge/React-19.0-blue?logo=react&logoColor=white)](https://react.dev/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.124-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
-[![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)](https://www.python.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![LangChain](https://img.shields.io/badge/LangChain-1.2-1C3C3C?logo=langchain&logoColor=white)](https://python.langchain.com/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-18.1-336791?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
-[![Redis](https://img.shields.io/badge/Redis-7.2-DC382D?logo=redis&logoColor=white)](https://redis.io/)
-[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
----
 
 ## What is this?
 
-Sarah AI Core is an open-source prototype for a "self-driving" supply chain.
+Inspired by Sarah AI's vision for autonomous CPG ops, I built this project to move away from static dashboards and into **active intelligence**—where the software doesn't just show you data, but actually helps you manage your business.
 
-Most ERPs today are just giant calculators. They are great at recording what happened (*"We sold 50 units yesterday"*), but terrible at telling you what to do next (*"You should order 200 more units from Supplier B because lead times just went up"*).
-
-I built this project to move away from static dashboards and into **active intelligence**—where the software doesn't just show you data, but actually helps you manage your business.
+**Problem:** Most ERPs today are just giant calculators. They are great at recording what happened (*"We sold 50 units yesterday"*), but terrible at telling you what to do next (*"You should order 200 more units from Supplier B because lead times just went up"*).
 
 ---
 
 ## 🚀 Key Features
 
-### 1. The Chat Interface (Conversational Analytics)
-**The Concept:** Moving away from "SQL and Excel" to "Natural Language."
+### 1. Intent-Aware Chat Interface
+A chat interface that routes requests based on intent, not keywords. It uses **LangGraph** to recognize the user's request type and redirects it to the appropriate tool.
 
-**How it works:**
-We use a technology called **NL2SQL (Natural Language to SQL)**. The LLM acts as a translator; it takes your plain English question, converts it into a precise database query, executes it, and formats the result back into a clear answer (or a chart).
+- **Normal Mode:** The model responds to simple messages like "Good Morning" or "Hello" without utilizing other tools.
+- **Analytical Mode (NL2SQL):** The LLM acts as a translator; it takes your plain English question, converts it into a precise database query, executes it, and formats the result back into a clear answer.
+- **Forecasting Mode:** If a forecasting question is asked (e.g., *"What is the expected Demand of Chocolate next month"*), the agent uses Amazon Chronos 2 to analyze the data, look at current inventory, and provide an answer.
 
-**Why we built it:**
-To solve the **"Data Silo" problem**. In most companies, a manager has to email a data analyst to get a custom report. With Sarah AI, you can ask *"Show me our top 5 most profitable products in the Midwest region last quarter,"* and get an answer in 3 seconds. No SQL knowledge required.
+### 2. The AI Inventory Assistant
+This feature focuses on inventory management and prescriptive analytics.
 
-### 2. The Forecasting Interface (Predictive Analytics)
-**The Concept:** Moving from "What happened?" to "What will happen?"
+- **Inventory Overview:** Shows detailed inventory data, including the worth of products currently in stock and sell-through rates.
+- **AI Insights:** A toggle switches the view to "AI Insight," which compares current stock-on-hand to what is needed for the next three months (MVP default).
+- **Replenishment Calculation:** Automatically calculates the necessary replenishment and visualizes it with a bar chart showing "How much we have" vs. "How much we need."
+- **AI Summary:** Provides a summary of stock levels and potential profit if the predictive model is used.
+- **Generate Demand:** A button that lets you confirm the predicted units to be ordered to maximize profit.
 
-**How it works:**
-Instead of simple moving averages, we use modern Machine Learning models (like LSTMs or Transformers) to analyze historical sales data. We also layer in seasonality and can theoretically account for external factors like holidays or economic shifts.
+### 3. The Forecasting Interface (Predictive Analytics)
+- **Visual Forecasting:** A chart showing Units Sales or Revenue of previous months alongside future forecasts using **Amazon Chronos**.
 
-**What it gives you:**
-- **Baseline Forecasts:** General business growth trends to help with cash flow planning.
-- **SKU-level Forecasts:** Specific predictions for every single item in your warehouse, so you know exactly what is likely to move.
-
-### 3. The AI Inventory Assistant (Prescriptive Analytics)
-This is the most advanced part of the core, combining our forecasting models with an autonomous procurement agent.
-
-#### The "Stock vs. Demand" Visualization
-We overlay your **Physical Stock (Actual)** against the **AI Forecast (Expected Demand)**.
-- **The Benefit:** It immediately highlights "Red Zones" where you are predicted to run out of stock (**Stockout**) before a new shipment can arrive, or "Yellow Zones" where you have too much cash tied up in dust-gathering inventory.
-
-#### Profit-Optimized PO Generation
-When it's time to reorder, the LLM doesn't just look at "how many do we need?" It looks at **Profitability**.
-
-It analyzes:
-- **Vendor Lead Times:** *"Supplier A is cheaper, but Supplier B is faster. We need it fast."*
-- **Bulk Discounts:** *"If we buy 100 more units, our margin increases by 5%."*
-- **Shipping Costs:** Grouping multiple items into one Purchase Order to save on freight.
-
-**Safety First (Human-in-the-Loop):**
-Critically, the AI **never** spends money on its own. It generates a "Draft PO" for you to review. You simply check the numbers and click "Confirm." This prevents the "paperclip maximizer" problem where an AI might accidentally spend your entire budget without oversight.
+### 4. Dashboards & Data Connectivity
+- **Home Page:** A simple dashboard displaying Revenue, Units Sold, Units on Hand, and Top Products.
+- **Data Connect:** Currently supports data ingestion via CSV and Excel files.
 
 ---
 
-## � The Roadmap (In Development)
+## 🗺️ The Roadmap (In Development)
 
 ### 🌅 The "Morning Briefing" Agent
 Instead of starting your day digging through dashboards, Sarah sends you a curated **Executive Summary** at 8:00 AM via WhatsApp, Telegram, or Slack.
@@ -86,20 +57,18 @@ While the morning briefing is for planning, these are for immediate action.
 
 ---
 
-## �🛠️ Tech Stack
-
-This isn't just a wrapper around ChatGPT. It's a full-stack application.
+## 🛠️ Tech Stack
 
 **Frontend:**
 - **React 19 (Vite):** Fast, modern, component-based UI.
 - **Tailwind CSS v4:** For a clean, custom-looking design system.
-- **Tremor / Chart.js:** For the data visualizations.
+- **Chart.js:** For the data visualizations.
 
 **Backend:**
 - **FastAPI (Python):** Handles the API requests and orchestrates the AI agents.
 - **PostgreSQL:** The primary database for sales, inventory, and product data.
 - **Redis:** Used for caching and storing chat history/session data.
-- **LangChain:** The framework for managing LLM chains and tools.
+- **LangChain/LangGraph:** The framework for managing LLM chains and tools.
 - **Amazon Chronos / PyTorch:** For the time-series forecasting models.
 
 **Infrastructure:**
@@ -109,22 +78,53 @@ This isn't just a wrapper around ChatGPT. It's a full-stack application.
 
 ## 🏃 Getting Started
 
-1. **Clone the repo**
+1. **Create the environment file**
    ```bash
-   git clone https://github.com/gaurav-jo1/sarah-ai-core.git
+   touch ./ml-backend/.env
    ```
 
-2. **Set up `.env`**
-   check `ml-backend/Dockerfile` or `docker-compose.yml` to see what variables are needed (mostly `DATABASE_URL` and `GOOGLE_API_KEY`).
+2. **Configure Environment Variables**
+   Add the following values to your `./ml-backend/.env` file:
+   ```env
+   DATABASE_URL=postgresql+psycopg2://postgres_user:postgres_pass@postgres:5432/myapp_db
+   REDIS_HOST=redis
+   REDIS_PORT=6379
 
-3. **Run it**
-   ```bash
-   docker-compose up --build
+   GEMINI_API_KEY=
+   HUGGING_FACE=
+
+   POSTGRES_USER=postgres_user
+   POSTGRES_PASSWORD=postgres_pass
+   POSTGRES_HOST=postgres
+   POSTGRES_PORT=5432
+   POSTGRES_DB=myapp_db
    ```
 
-4. **Visit**
-   - Frontend: `http://localhost:5173`
-   - Backend Docs: `http://localhost:8000/docs`
+3. **Start the services**
+   ```bash
+   sudo docker compose up
+   ```
+
+4. **Set up Python Virtual Environment**
+   ```bash
+   uv virtualenv
+   ```
+
+5. **Activate Virtual Environment**
+   ```bash
+   source .venv/bin/activate
+   ```
+
+6. **Install Python Dependencies**
+   ```bash
+   uv pip install -r requirements-dev.txt
+   ```
+
+7. **Generate Mock Data**
+   Run the mock data generation script and upload the result on the Data Connect Page:
+   ```bash
+   python generate_mock_data.py
+   ```
 
 ---
 
