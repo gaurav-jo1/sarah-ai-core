@@ -29,12 +29,12 @@ async def chat_model(request: ChatRequest):
     memory = ChatMemoryManager()
 
     try:
-        result = await ChatModel().chat(user_input=request.message)
+        result, message_type = await ChatModel().chat(user_input=request.message)
 
         memory.add_message(request.session_id, role="user", content=request.message)
-        memory.add_message(request.session_id, role="ai", content=result)
+        memory.add_message(request.session_id, role="ai", content=result, content_type=message_type)
 
-        return {"response": result}
+        return {"response": result, "message_type": message_type}
 
     except Exception as e:
         raise HTTPException(

@@ -14,7 +14,12 @@ class ChatMemoryManager:
         return f"chat:session:{session_id}"
 
     def add_message(
-        self, session_id: str, role: str, content: str, metadata: Dict = None
+        self,
+        session_id: str,
+        role: str,
+        content: str,
+        content_type: str = None,
+        metadata: Dict = None,
     ):
         """Add a message to the chat history"""
         key = self._get_session_key(session_id)

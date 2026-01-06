@@ -259,6 +259,7 @@ class ChatModel:
         state["messages"].append({"role": "user", "content": user_input})
         state = await graph.ainvoke(state)
 
+        message_type = state["message_type"]
         llm_response = state["messages"][-1].content
 
         if (
@@ -266,5 +267,6 @@ class ChatModel:
             and len(llm_response) > 0
             and isinstance(llm_response[0], dict)
         ):
-            return llm_response[0]["text"]
-        return llm_response
+            return llm_response[0]["text"], message_type
+
+        return llm_response, message_type

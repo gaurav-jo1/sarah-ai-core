@@ -5,7 +5,13 @@ import ReactMarkdown from "react-markdown";
 
 const ChatPage: React.FC = () => {
   const [messages, setMessages] = useState<
-    { id: string; text: string; sender: "user" | "ai"; timestamp: Date }[]
+    {
+      id: string;
+      text: string;
+      sender: "user" | "ai";
+      timestamp: Date;
+      message_type?: "normal" | "analytical" | "forecasting";
+    }[]
   >([]);
   const [inputText, setInputText] = useState("");
   const [loading, setLoading] = useState(false);
@@ -39,6 +45,7 @@ const ChatPage: React.FC = () => {
             text: String(msg.content),
             sender: (msg.role === "ai" ? "ai" : "user") as "user" | "ai",
             timestamp: new Date(),
+            message_type: msg.message_type,
           }));
           setMessages(historyMessages);
         }
@@ -76,10 +83,12 @@ const ChatPage: React.FC = () => {
         session_id: storedSessionId || undefined,
       });
 
+      const { response: aiResponse, message_type } = response.data;
+
       const aiText =
-        response.data.response ||
+        aiResponse ||
         response.data.message ||
-        JSON.stringify(response.data);
+        (typeof response.data === 'string' ? response.data : JSON.stringify(response.data));
 
       setMessages((prev) => [
         ...prev,
@@ -88,6 +97,7 @@ const ChatPage: React.FC = () => {
           text: aiText,
           sender: "ai",
           timestamp: new Date(),
+          message_type: message_type,
         },
       ]);
     } catch (error) {
@@ -108,18 +118,40 @@ const ChatPage: React.FC = () => {
 
   const hasStarted = messages.length > 0;
 
+  const getAgentBadgeColor = (type?: string) => {
+    switch (type) {
+      case "analytical":
+        return "bg-purple-100 text-purple-700 border-purple-200";
+      case "forecasting":
+        return "bg-emerald-100 text-emerald-700 border-emerald-200";
+      case "normal":
+      default:
+        return "bg-slate-100 text-slate-600 border-slate-200";
+    }
+  };
+
+  const getAgentLabel = (type?: string) => {
+    if (!type) return "Sarah AI";
+    return type.charAt(0).toUpperCase() + type.slice(1) + " Agent";
+  };
+
   return (
     <div className="flex flex-col h-full relative bg-slate-50 text-slate-800 font-sans selection:bg-indigo-100 selection:text-indigo-700 overflow-hidden">
       {/* Header / Brand - Transitions from Center to Top */}
       <div
         className={`absolute w-full flex justify-center transition-all duration-700 ease-in-out z-10 ${
           hasStarted
-            ? "top-0 py-4 bg-white/80 backdrop-blur-md shadow-xs border-b border-slate-100/50"
+            ? "top-0 py-4"
             : "top-[40%] -translate-y-1/2"
         }`}
       >
+        <div
+          className={`absolute inset-0 bg-white/80 backdrop-blur-md shadow-xs border-b border-slate-100/50 transition-opacity duration-500 ease-in-out ${
+            hasStarted ? "opacity-100 delay-500" : "opacity-0"
+          }`}
+        />
         <h1
-          className={`text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500 drop-shadow-sm tracking-tight transition-transform duration-700 ease-in-out ${
+          className={`relative text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500 drop-shadow-sm tracking-tight transition-transform duration-700 ease-in-out ${
             hasStarted ? "scale-75 origin-center" : "scale-100"
           }`}
         >
@@ -134,45 +166,52 @@ const ChatPage: React.FC = () => {
         }`}
       >
         <div className="w-full max-w-4xl mx-auto px-4 pt-24 pb-32">
-        {messages.map((msg) => (
-          <div
-            key={msg.id}
-            className={`flex w-full mb-6 ${
-              msg.sender === "user" ? "justify-end" : "justify-start"
-            }`}
-          >
+          {messages.map((msg) => (
             <div
-              className={`max-w-[80%] md:max-w-[70%] lg:max-w-[60%] px-6 py-4 rounded-2xl text-base md:text-lg leading-relaxed shadow-sm ${
-                msg.sender === "user"
-                  ? "bg-indigo-600 text-white rounded-br-none"
-                  : "bg-white text-slate-700 border border-slate-100 rounded-bl-none"
+              key={msg.id}
+              className={`flex w-full mb-6 ${
+                msg.sender === "user" ? "justify-end" : "justify-start"
               }`}
             >
-              <ReactMarkdown
-                components={{
-                  strong: ({ ...props }) => (
-                    <span className="font-bold" {...props} />
-                  ),
-                  ul: ({ ...props }) => (
-                    <ul className="list-disc ml-4 space-y-1 my-2" {...props} />
-                  ),
-                  ol: ({ ...props }) => (
-                    <ol
-                      className="list-decimal ml-4 space-y-1 my-2"
-                      {...props}
-                    />
-                  ),
-                  li: ({ ...props }) => <li className="pl-1" {...props} />,
-                  p: ({ ...props }) => (
-                    <p className="mb-1 last:mb-0" {...props} />
-                  ),
-                }}
-              >
-                {msg.text}
-              </ReactMarkdown>
+              <div className={`flex flex-col ${msg.sender === "user" ? "items-end" : "items-start"} max-w-[80%] md:max-w-[70%] lg:max-w-[60%]`}>
+                {msg.sender === "ai" && (
+                  <span className={`mb-1.5 px-2.5 py-0.5 text-xs font-semibold rounded-full border ${getAgentBadgeColor(msg.message_type)}`}>
+                    {getAgentLabel(msg.message_type)}
+                  </span>
+                )}
+                <div
+                  className={`w-full px-6 py-4 rounded-2xl text-base md:text-lg leading-relaxed shadow-sm ${
+                    msg.sender === "user"
+                      ? "bg-indigo-600 text-white rounded-br-none"
+                      : "bg-white text-slate-700 border border-slate-100 rounded-bl-none"
+                  }`}
+                >
+                  <ReactMarkdown
+                    components={{
+                      strong: ({ ...props }) => (
+                        <span className="font-bold" {...props} />
+                      ),
+                      ul: ({ ...props }) => (
+                        <ul className="list-disc ml-4 space-y-1 my-2" {...props} />
+                      ),
+                      ol: ({ ...props }) => (
+                        <ol
+                          className="list-decimal ml-4 space-y-1 my-2"
+                          {...props}
+                        />
+                      ),
+                      li: ({ ...props }) => <li className="pl-1" {...props} />,
+                      p: ({ ...props }) => (
+                        <p className="mb-1 last:mb-0" {...props} />
+                      ),
+                    }}
+                  >
+                    {msg.text}
+                  </ReactMarkdown>
+                </div>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
 
         {/* Loading Indicator */}
         {loading && (
