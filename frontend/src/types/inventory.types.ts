@@ -29,12 +29,19 @@ export interface AiInsightsInventoryItem {
     current_price: number;
     cost_per_unit: number;
     prediction_3m: number;
+    prediction_3m_lower_bound: number;
+    prediction_3m_upper_bound: number;
     predicted_stockout_month: string;
     margin_per_unit: number;
     total_projected_profit_3m: number;
+    total_projected_profit_3m_lower_bound: number;
+    total_projected_profit_3m_upper_bound: number;
     total_projected_revenue_3m: number;
+    total_projected_revenue_3m_lower_bound: number;
+    total_projected_revenue_3m_upper_bound: number;
     replenishment_needed: number;
 }
+
 
 export interface AiInsightsResponse {
     inventory: AiInsightsInventoryItem[];

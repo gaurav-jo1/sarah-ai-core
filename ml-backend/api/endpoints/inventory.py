@@ -74,8 +74,20 @@ async def get_ai_insights(db: Session = Depends(get_db)):
     for data in forecast:
         total_forecast[data["product_id"]] += data["predictions"]
 
+        new_1 = f"{data['product_id']}_0_1"
+        new_9 = f"{data['product_id']}_0_9"
+
+        total_forecast[new_1] += data["0.1"]
+        total_forecast[new_9] += data["0.9"]
+
     for data in inventory:
         data["prediction_3m"] = total_forecast[data["product_id"]]
+
+        new_1 = f"{data['product_id']}_0_1"
+        new_9 = f"{data['product_id']}_0_9"
+
+        data["prediction_3m_lower_bound"] = total_forecast[new_1]
+        data["prediction_3m_upper_bound"] = total_forecast[new_9]
 
     for data in inventory:
         current_stock = data["stock_on_hand"]
@@ -89,8 +101,22 @@ async def get_ai_insights(db: Session = Depends(get_db)):
         data["total_projected_profit_3m"] = (
             data["margin_per_unit"] * data["prediction_3m"]
         )
+        data["total_projected_profit_3m_lower_bound"] = (
+            data["margin_per_unit"] * data["prediction_3m_lower_bound"]
+        )
+        data["total_projected_profit_3m_upper_bound"] = (
+            data["margin_per_unit"] * data["prediction_3m_upper_bound"]
+        )
+
+
         data["total_projected_revenue_3m"] = (
             data["current_price"] * data["prediction_3m"]
+        )
+        data["total_projected_revenue_3m_lower_bound"] = (
+            data["current_price"] * data["prediction_3m_lower_bound"]
+        )
+        data["total_projected_revenue_3m_upper_bound"] = (
+            data["current_price"] * data["prediction_3m_upper_bound"]
         )
         data["replenishment_needed"] = data["prediction_3m"] - data["stock_on_hand"]
 
