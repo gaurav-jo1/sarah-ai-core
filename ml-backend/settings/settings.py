@@ -10,6 +10,5 @@ class Settings(BaseSettings):
     GEMINI_API_KEY: str
     REDIS_HOST: str
     REDIS_PORT: int
-    GROQ_API_KEY: str
 
 api_settings = Settings()

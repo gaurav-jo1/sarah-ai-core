@@ -78,12 +78,26 @@ While the morning briefing is for planning, these are for immediate action.
 
 ## 🏃 Getting Started
 
-1. **Create the environment file**
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/gaurav-jo1/sarah-ai-core
+   cd sarah-ai-core
+   ```
+
+2. **Install `uv`**
+   ```bash
+   pip install uv
+   ```
+
+3. **Get Gemini API Key**
+   Get your Google Gemini API key from [Google AI Studio](https://aistudio.google.com/app/api-keys).
+
+4. **Create the environment file**
    ```bash
    touch ./ml-backend/.env
    ```
 
-2. **Configure Environment Variables**
+5. **Configure Environment Variables**
    Add the following values to your `./ml-backend/.env` file:
    ```env
    DATABASE_URL=postgresql+psycopg2://postgres_user:postgres_pass@postgres:5432/myapp_db
@@ -91,7 +105,6 @@ While the morning briefing is for planning, these are for immediate action.
    REDIS_PORT=6379
 
    GEMINI_API_KEY=
-   HUGGING_FACE=
 
    POSTGRES_USER=postgres_user
    POSTGRES_PASSWORD=postgres_pass
@@ -100,31 +113,31 @@ While the morning briefing is for planning, these are for immediate action.
    POSTGRES_DB=myapp_db
    ```
 
-3. **Start the services**
+6. **Start the services**
    ```bash
    sudo docker compose up
    ```
 
-4. **Set up Python Virtual Environment**
+7. **Set up Python Virtual Environment**
    ```bash
-   uv virtualenv
+   uv venv
    ```
 
-5. **Activate Virtual Environment**
+8. **Activate Virtual Environment**
    ```bash
    source .venv/bin/activate
    ```
 
-6. **Install Python Dependencies**
+9. **Install Python Dependencies**
    ```bash
    uv pip install -r requirements-dev.txt
    ```
 
-7. **Generate Mock Data**
-   Run the mock data generation script and upload the result on the Data Connect Page:
-   ```bash
-   python generate_mock_data.py
-   ```
+10. **Generate Mock Data**
+    Run the mock data generation script and upload the result on the Data Connect Page:
+    ```bash
+    python generate_mock_data.py
+    ```
 
 ---
 
