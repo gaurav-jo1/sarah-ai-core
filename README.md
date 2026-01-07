@@ -40,20 +40,11 @@ This feature focuses on inventory management and prescriptive analytics.
 
 ## 🗺️ The Roadmap (In Development)
 
-### 🌅 The "Morning Briefing" Agent
-Instead of starting your day digging through dashboards, Sarah sends you a curated **Executive Summary** at 8:00 AM via WhatsApp, Telegram, or Slack.
+- **Advanced Messy PDF Parsing**
+  Upload any complex or scanned PDF (invoices, supplier specs, reports) and instantly convert it into structured, actionable data using state-of-the-art OCR powered by DeepSeek-OCR.
 
-**The Content:**
-- **Financials:** "Yesterday's Revenue: $12k (vs Target: $10k) 🚀"
-- **Inventory Health:** "95% In Stock. 2 items at risk of stockout."
-- **Top Performer:** "Product X was the winner yesterday."
-- **The To-Do List:** AI-prioritized tasks that need your attention (e.g., "3 POs awaiting approval").
-
-### 🚨 Real-Time "Anomaly Alerts"
-While the morning briefing is for planning, these are for immediate action.
-
-- **Critical Stock Alerts:** *"Alert: SKU-104 just dropped below safety levels due to an unexpected bulk order. Reorder now?"*
-- **Finance Alerts:** *"Large Payment Received: $50,000 from Client X."*
+- **Smart Data Enrichment & Validation**
+  Automatically validate totals, flag anomalies, convert currencies, and enrich with external insights (e.g., market rates, compliance checks).
 
 ---
 
