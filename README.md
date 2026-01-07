@@ -11,6 +11,9 @@ Inspired by Sarah AI's vision for autonomous CPG ops, I built this project to mo
 
 ---
 
+https://github.com/user-attachments/assets/2e755d93-2840-40ee-adc6-0a68a07e44e4
+
+
 ## 🚀 Key Features
 
 ### 1. Intent-Aware Chat Interface
