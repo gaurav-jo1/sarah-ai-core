@@ -1,5 +1,6 @@
 from pydantic_settings import BaseSettings
 
+
 class Settings(BaseSettings):
     POSTGRES_HOST: str
     POSTGRES_PORT: str
@@ -8,7 +9,9 @@ class Settings(BaseSettings):
     POSTGRES_PASSWORD: str
     DATABASE_URL: str
     GEMINI_API_KEY: str
+    HUGGING_FACE_KEY: str
     REDIS_HOST: str
     REDIS_PORT: int
+
 
 api_settings = Settings()
