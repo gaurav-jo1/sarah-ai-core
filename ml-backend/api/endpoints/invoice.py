@@ -4,6 +4,8 @@ from settings.settings import api_settings
 import base64
 import json
 import re
+import os
+import fitz
 
 router = APIRouter()
 
@@ -13,11 +15,52 @@ async def data_connect(file: UploadFile = File(...)):
     if not file.filename:
         raise HTTPException(status_code=400, detail="No file uploaded.")
 
-    image_bytes = await file.read()
+    extension = os.path.splitext(file.filename)[1].lower()
 
-    base64_image = base64.b64encode(image_bytes).decode("utf-8")
+    images_base64 = []
 
-    data_url = f"data:{file.content_type};base64,{base64_image}"
+    try:
+        if extension == ".pdf":
+            pdf_bytes = await file.read()
+
+            if not pdf_bytes:
+                raise ValueError("PDF file is empty")
+
+            pdf_doc = fitz.open(stream=pdf_bytes, filetype="pdf")
+
+            try:
+                for page_index in range(len(pdf_doc)):
+                    page = pdf_doc[page_index]
+                    pix = page.get_pixmap()
+                    image_bytes = pix.tobytes("png")
+                    base64_image = base64.b64encode(image_bytes).decode("utf-8")
+
+                    images_base64.append(
+                        {
+                            "page": page_index + 1,
+                            "data_url": f"data:image/png;base64,{base64_image}",
+                        }
+                    )
+            finally:
+                pdf_doc.close()  # Ensure PDF is closed
+
+        else:
+            image_bytes = await file.read()
+
+            if not image_bytes:
+                raise ValueError("Image file is empty")
+
+            base64_image = base64.b64encode(image_bytes).decode("utf-8")
+
+            images_base64.append(
+                {
+                    "page": 1,
+                    "data_url": f"data:{file.content_type};base64,{base64_image}",
+                }
+            )
+
+    except Exception as e:
+        raise RuntimeError(f"Failed to process file: {str(e)}")
 
     # 1. "raw_transcription": - A single string containing every piece of text found in the document for archival purposes.
 
@@ -44,6 +87,13 @@ async def data_connect(file: UploadFile = File(...)):
         Output ONLY valid JSON.
     """
 
+    content = [{"type": "text", "text": instruction}]
+
+    for data_url in images_base64:
+        content.append(
+            {"type": "image_url", "image_url": {"url": data_url["data_url"]}}
+        )
+
     # 1. Qwen/Qwen2.5-VL-7B-Instruct
     client = InferenceClient(api_key=api_settings.HUGGING_FACE_KEY)
 
@@ -56,10 +106,7 @@ async def data_connect(file: UploadFile = File(...)):
             },
             {
                 "role": "user",
-                "content": [
-                    {"type": "text", "text": instruction},
-                    {"type": "image_url", "image_url": {"url": data_url}},
-                ],
+                "content": content,
             },
         ],
         temperature=0.1,
