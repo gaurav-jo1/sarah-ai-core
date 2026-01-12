@@ -1,0 +1,39 @@
+{
+  "po_header": {
+    "invoice_number": "DE199378386",
+    "po_number": "PO-2026-001",
+    "date": "2026-01-12",
+    "currency": "EUR",
+    "status": "Draft",
+    "vendor": {
+      "name": "Demo Service Provider",
+      "id": "VEND-882"
+    }
+  },
+  "line_items": [
+    {
+      "service_description": "Basic Fee wmView",
+      "unit_price": 130.00,
+      "quantity": 1,
+      "total_amount": 130.00
+    },
+    {
+      "service_description": "Transaction Fee T1",
+      "unit_price": 0.58,
+      "quantity": 14,
+      "total_amount": 8.12
+    },
+    {
+      "service_description": "Transaction Fee T3",
+      "unit_price": 1.50,
+      "quantity": 162,
+      "total_amount": 243.00
+    }
+  ],
+  "totals": {
+    "subtotal_without_vat": 381.12,
+    "tax_rate": "0.00%",
+    "total_vat": 0.00,
+    "grand_total": 381.12
+  }
+}
