@@ -1,6 +1,14 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router";
-import { Home, MessageSquare, Menu, Database, ChartNoAxesCombined, Package } from "lucide-react";
+import {
+  Home,
+  MessageSquare,
+  Menu,
+  Database,
+  ChartNoAxesCombined,
+  Package,
+  FileSearchCorner
+} from "lucide-react";
 
 const Sidebar: React.FC = () => {
   const [open, setOpen] = useState(true);
@@ -9,10 +17,32 @@ const Sidebar: React.FC = () => {
 
   const Menus = [
     { title: "Home", path: "/", src: <Home className="w-5 h-5" /> },
-    { title: "Chat", path: "/chat", src: <MessageSquare className="w-5 h-5" /> },
-    { title: "Forecasting", path: "/forecasting", src: <ChartNoAxesCombined className="w-5 h-5" /> },
-    { title: "Inventory", path: "/inventory", src: <Package className="w-5 h-5" /> },
-    { title: "Data Connect", path: "/data-connect", src: <Database className="w-5 h-5" /> },
+    {
+      title: "Chat",
+      path: "/chat",
+      src: <MessageSquare className="w-5 h-5" />,
+    },
+    {
+      title: "Forecasting",
+      path: "/forecasting",
+      src: <ChartNoAxesCombined className="w-5 h-5" />,
+    },
+    {
+      title: "Inventory",
+      path: "/inventory",
+      src: <Package className="w-5 h-5" />,
+    },
+    {
+      title: "Invoice Intelligence",
+      path: "/invoice-intelligence",
+      src: <FileSearchCorner className="w-5 h-5" />,
+    },
+
+    {
+      title: "Data Connect",
+      path: "/data-connect",
+      src: <Database className="w-5 h-5" />,
+    },
   ];
 
   return (
@@ -78,7 +108,9 @@ const Sidebar: React.FC = () => {
               >
                 <div
                   className={`min-w-5 ${
-                    isActive ? "text-blue-600" : "text-gray-400 group-hover:text-gray-600"
+                    isActive
+                      ? "text-blue-600"
+                      : "text-gray-400 group-hover:text-gray-600"
                   }`}
                 >
                   {menu.src}
@@ -87,7 +119,11 @@ const Sidebar: React.FC = () => {
                   className={`
                     transition-all duration-300 origin-left
                     whitespace-nowrap overflow-hidden
-                    ${open ? "opacity-100 w-auto translate-x-0" : "opacity-0 w-0 -translate-x-5 hidden"}
+                    ${
+                      open
+                        ? "opacity-100 w-auto translate-x-0"
+                        : "opacity-0 w-0 -translate-x-5 hidden"
+                    }
                   `}
                 >
                   {menu.title}

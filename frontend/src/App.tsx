@@ -7,6 +7,7 @@ import ChatPage from "./pages/ChatPage";
 import DataConnectPage from "./pages/DataConnectPage";
 import Forecasting from "./pages/Forecasting";
 import InventoryPage from "./pages/InventoryPage";
+import InvoiceIntelligencePage from "./pages/InvoiceIntelligencePage";
 
 const App: React.FC = () => {
   return (
@@ -20,6 +21,7 @@ const App: React.FC = () => {
           <Route path="/data-connect" element={<DataConnectPage />} />
           <Route path="/forecasting" element={<Forecasting />} />
           <Route path="/inventory" element={<InventoryPage />} />
+          <Route path="/invoice-intelligence" element={<InvoiceIntelligencePage />} />
         </Routes>
       </div>
     </div>
@@ -27,5 +29,3 @@ const App: React.FC = () => {
 };
 
 export default App;
-
-
