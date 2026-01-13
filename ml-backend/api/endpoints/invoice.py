@@ -5,10 +5,11 @@ from ml.invoice_handler import (
     process_uploaded_file,
     extract_invoice_data,
     reconcile_invoice_po,
-    extract_invoice_summary
+    extract_invoice_summary,
 )
 
 router = APIRouter()
+
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def data_connect(file: UploadFile = File(...)):
@@ -23,14 +24,16 @@ async def data_connect(file: UploadFile = File(...)):
         invoice_data = extract_invoice_data(images_base64)
 
         if not invoice_data:
-            raise HTTPException(status_code=422, detail="Failed to extract data from invoice.")
+            raise HTTPException(
+                status_code=422, detail="Failed to extract data from invoice."
+            )
 
         # 3. Retrieve the purchase order data (Mock DB)
         # For actual implementation, this would query the database based on extracted PO number
         db_path = os.path.join("db", "po_mock.json")
 
         if not os.path.exists(db_path):
-             raise FileNotFoundError(f"Mock database file not found at {db_path}")
+            raise FileNotFoundError(f"Mock database file not found at {db_path}")
 
         with open(db_path, "r") as f:
             po_data = json.load(f)
@@ -44,7 +47,7 @@ async def data_connect(file: UploadFile = File(...)):
         data_summary = extract_invoice_summary(invoice_data)
 
         return {
-            "response_zai": data_invoice_po,
+            "response": data_invoice_po,
             "invoice_summary": data_summary,
             "po_summary": po_summary,
         }
@@ -55,4 +58,6 @@ async def data_connect(file: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail=str(re))
     except Exception as e:
         print(f"Unexpected error: {e}")
-        raise HTTPException(status_code=500, detail="An unexpected error occurred during processing.")
+        raise HTTPException(
+            status_code=500, detail="An unexpected error occurred during processing."
+        )

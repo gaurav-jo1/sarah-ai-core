@@ -128,17 +128,17 @@ const InvoiceValidatePage: React.FC = () => {
         {apiResponse && !isLoading && (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Issuer Details */}
-            <IssuerDetailsCard details={apiResponse.issuer_details} />
+            <IssuerDetailsCard details={apiResponse.response.issuer_details} />
 
             {/* Summary & Validation Cards */}
             <ValidationSummaryCards
               invoice={apiResponse.invoice_summary}
               po={apiResponse.po_summary}
-              lineItems={apiResponse.response}
+              lineItems={apiResponse.response.line_item_matches}
             />
 
             {/* Detailed Table */}
-            <ValidationTable items={apiResponse.response} />
+            <ValidationTable items={apiResponse.response.line_item_matches} />
           </div>
         )}
       </div>

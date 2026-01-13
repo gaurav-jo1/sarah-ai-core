@@ -27,9 +27,13 @@ export interface IssuerDetails {
     website: string;
 }
 
-export interface ApiResponse {
+export interface ResponseData {
     issuer_details: IssuerDetails;
-    response: LineItem[];
+    line_item_matches: LineItem[];
+}
+
+export interface ApiResponse {
+    response: ResponseData;
     invoice_summary: InvoiceSummary;
     po_summary: POSummary;
 }

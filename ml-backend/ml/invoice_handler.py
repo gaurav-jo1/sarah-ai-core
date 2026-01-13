@@ -8,6 +8,7 @@ from fastapi import UploadFile
 from huggingface_hub import InferenceClient
 from settings.settings import api_settings
 
+
 async def process_uploaded_file(file: UploadFile) -> List[Dict[str, str]]:
     """
     Reads an uploaded file (PDF or Image) and converts it to a list of base64 encoded data URLs.
@@ -55,11 +56,14 @@ async def process_uploaded_file(file: UploadFile) -> List[Dict[str, str]]:
             )
 
     except Exception as e:
-         raise RuntimeError(f"Failed to process file: {str(e)}")
+        raise RuntimeError(f"Failed to process file: {str(e)}")
 
     return images_base64
 
-def extract_invoice_data(images_base64: List[Dict[str, str]]) -> Optional[Dict[str, Any]]:
+
+def extract_invoice_data(
+    images_base64: List[Dict[str, str]],
+) -> Optional[Dict[str, Any]]:
     """
     Sends the invoice images to the VLM (Qwen) to extract structured data.
     """
@@ -133,32 +137,51 @@ def extract_invoice_data(images_base64: List[Dict[str, str]]) -> Optional[Dict[s
         print("No JSON object found in response")
         return None
 
-def reconcile_invoice_po(invoice_data: Dict[str, Any], po_items: List[Dict[str, Any]]) -> Any:
+
+def reconcile_invoice_po(
+    invoice_data: Dict[str, Any], po_items: List[Dict[str, Any]]
+) -> Any:
     """
     Reconciles the invoice data with the Purchase Order items using an LLM.
     """
     user_prompt = f"""
         Input Data:
-
         Invoice data: {invoice_data},
         Purchase Order data: {po_items}
 
-        Task: Compare the `line_items` from a Purchase Order (PO) against the `table_data` from an Invoice. Your goal is to find the matching invoice entry for every item listed in the PO based on the service description.
+        Task 1: Issuer Extraction
+        Extract the following details about the entity that issued the invoice:
+        - name, address, phone, email, website.
+        If a field is missing, return an empty string "".
+
+        Task 2: Line Item Matching
+        Compare the `line_items` from the PO against the `table_data` from the Invoice. Find the matching invoice entry for every item listed in the PO.
 
         Matching Rules:
-        1. Semantic Matching: Match items by description even if phrasing or formatting varies slightly (e.g., "Basic Fee wmView" vs "Basic Fee").
-        2. Ignore Zero-Value Noise: The invoice contains many placeholder items with a quantity of "0". Prioritize matching PO items to invoice items that have non-zero quantities first, then fallback to description similarity.
+        1. Semantic Matching: Match items by description despite phrasing variations (e.g., "Basic Fee wmView" vs "Basic Fee").
+        2. Ignore Zero-Value Noise: Prioritize invoice items with non-zero quantities.
         3. Data Cleaning: Remove currency symbols and convert European number formats (e.g., 1.000,00) to standard decimals (1000.00).
 
         Output Format:
-        Return ONLY a valid JSON array of objects. Do not include conversational text. Each object MUST contain exactly these keys:
-        - "product_or_description": (The matched name): string
-        - "po_quantity": (Quantity from PO): number
-        - "po_price": (Unit price from PO): number, remove currency symbols
-        - "invoice_quantity": (Quantity from Invoice): number
-        - "invoice_price": (Unit price from Invoice): number, remove currency symbols
-
-        Output ONLY valid JSON.
+        Return ONLY a valid JSON object. Do not include conversational text. The structure must be:
+        {{
+        "issuer_details": {{
+            "name": string,
+            "address": string,
+            "phone": string,
+            "email": string,
+            "website": string
+        }},
+        "line_item_matches": [
+            {{
+            "product_or_description": string,
+            "po_quantity": number,
+            "po_price": number,
+            "invoice_quantity": number,
+            "invoice_price": number
+            }}
+        ]
+        }}
     """
 
     client = InferenceClient(api_key=api_settings.HUGGING_FACE_KEY)
@@ -187,6 +210,7 @@ def reconcile_invoice_po(invoice_data: Dict[str, Any], po_items: List[Dict[str, 
         json_str_invoice_po = response_invoice_po.strip()
 
     return json.loads(json_str_invoice_po)
+
 
 def extract_invoice_summary(invoice_data: Dict[str, Any]) -> Any:
     """

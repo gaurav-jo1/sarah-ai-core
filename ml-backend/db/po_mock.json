@@ -13,27 +13,27 @@
   "line_items": [
     {
       "service_description": "Basic Fee wmView",
-      "unit_price": 130.00,
+      "unit_price": 130.0,
       "quantity": 1,
-      "total_amount": 130.00
+      "total_amount": 130.0
     },
     {
       "service_description": "Transaction Fee T1",
       "unit_price": 0.58,
-      "quantity": 14,
-      "total_amount": 8.12
+      "quantity": 20,
+      "total_amount": 11.6
     },
     {
       "service_description": "Transaction Fee T3",
-      "unit_price": 1.50,
+      "unit_price": 1.5,
       "quantity": 162,
-      "total_amount": 243.00
+      "total_amount": 243.0
     }
   ],
   "totals": {
-    "subtotal_without_vat": 381.12,
+    "subtotal_without_vat": 384.6,
     "tax_rate": "0.00%",
-    "total_vat": 0.00,
-    "grand_total": 381.12
+    "total_vat": 0.0,
+    "grand_total": 384.6
   }
 }
