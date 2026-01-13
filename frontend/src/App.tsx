@@ -8,6 +8,8 @@ import DataConnectPage from "./pages/DataConnectPage";
 import Forecasting from "./pages/Forecasting";
 import InventoryPage from "./pages/InventoryPage";
 import InvoiceIntelligencePage from "./pages/InvoiceIntelligencePage";
+import InvoiceDocumentPage from "./pages/InvoiceDocumentPage";
+import InvoiceValidatePage from "./pages/InvoiceValidatePage";
 
 const App: React.FC = () => {
   return (
@@ -22,6 +24,8 @@ const App: React.FC = () => {
           <Route path="/forecasting" element={<Forecasting />} />
           <Route path="/inventory" element={<InventoryPage />} />
           <Route path="/invoice-intelligence" element={<InvoiceIntelligencePage />} />
+          <Route path="/invoice-intelligence/document" element={<InvoiceDocumentPage />} />
+          <Route path="/invoice-intelligence/document/validate" element={<InvoiceValidatePage />} />
         </Routes>
       </div>
     </div>
