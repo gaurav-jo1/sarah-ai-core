@@ -50,7 +50,7 @@ A prototype demonstrating how manual document processing inside legacy ERPs can 
 - **Data Validation:** Performs cross-checks on prices, quantities, and totals, flagging any discrepancies for human review.
 - **Departmental Relevance:** Designed for Finance, Accounts Payable, Procurement, and Operations teams.
 
-🎬 _Demo video coming soon — showing the full end-to-end flow._
+https://github.com/user-attachments/assets/4e92e35c-a6fe-470d-b5da-c3fc60fa5e7b
 
 ---
 
